@@ -62,11 +62,15 @@ function updateHomeScreen() {
     const state = getState();
 
     // Streak
-    document.getElementById('streak-count').textContent = state.streak;
+    const streakEl = document.getElementById('streak-count');
+    if (streakEl) streakEl.textContent = state.streak;
 
     // XP & Coins
-    document.getElementById('home-xp').textContent = `${state.xp} XP`;
-    document.getElementById('home-coins').textContent = state.coins;
+    const xpEl = document.getElementById('home-xp');
+    if (xpEl) xpEl.textContent = `${state.xp} XP`;
+
+    const coinsEl = document.getElementById('home-coins');
+    if (coinsEl) coinsEl.textContent = state.coins;
 
     // Goal (check if sprint exists and how many questions answered)
     const sprint = state.currentSprint;

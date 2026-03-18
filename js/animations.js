@@ -51,6 +51,13 @@ export async function loadSounds() {
     for (const [name, url] of Object.entries(sounds)) {
         try {
             const response = await fetch(url);
+            if (!response.ok) throw new Error('Not found');
+
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('text/html')) {
+                throw new Error('Fallback HTML returned instead of audio file');
+            }
+
             const buffer = await response.arrayBuffer();
             soundBuffers[name] = await audioContext.decodeAudioData(buffer);
         } catch (e) {
