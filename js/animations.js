@@ -25,20 +25,28 @@ export function hapticSuccess() {
     haptic(40);
 }
 
-// --- Sound Effects ---
-const audioContext = typeof AudioContext !== 'undefined'
-    ? new AudioContext()
-    : typeof webkitAudioContext !== 'undefined'
-        ? new webkitAudioContext()
-        : null;
+const isIOS =
+    typeof navigator !== 'undefined' &&
+    (/iPad|iPhone|iPod/.test(navigator.platform) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) &&
+    !window.MSStream;
 
+export const hapticEnabled = () => {
+    return navigator.vibrate !== undefined;
+};
+
+// --- AUDIO SYSTEM ---
+let audioContext = null;
 const soundBuffers = {};
 let soundsLoaded = false;
+let soundsPendingLoad = false;
 
 /**
  * Pre-load sound effects
  */
 export async function loadSounds() {
+    if (soundsLoaded) return;
+    // If we try to load before context exists, wait
     if (!audioContext) return;
 
     const sounds = {
@@ -65,6 +73,7 @@ export async function loadSounds() {
         }
     }
     soundsLoaded = true;
+    soundsPendingLoad = false; // Reset pending flag after loading attempt
 }
 
 /**
@@ -198,13 +207,24 @@ export function showNextStep(stepIndex) {
 
 // --- Resume AudioContext on first user interaction ---
 export function initAudioOnInteraction() {
-    const resume = () => {
+    const unlockAudio = () => {
+        if (!audioContext && (window.AudioContext || window.webkitAudioContext)) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
         if (audioContext && audioContext.state === 'suspended') {
             audioContext.resume();
         }
-        document.removeEventListener('touchstart', resume);
-        document.removeEventListener('click', resume);
+
+        if (!soundsLoaded && !soundsPendingLoad) {
+            soundsPendingLoad = true;
+            loadSounds();
+        }
+
+        document.removeEventListener('click', unlockAudio);
+        document.removeEventListener('touchstart', unlockAudio);
     };
-    document.addEventListener('touchstart', resume, { once: true });
-    document.addEventListener('click', resume, { once: true });
+
+    document.addEventListener('click', unlockAudio);
+    document.addEventListener('touchstart', unlockAudio);
 }

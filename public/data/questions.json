@@ -5,25 +5,38 @@
     "step_1": {
       "label": "Concept",
       "q": "Which property remains strictly constant?",
-      "options": ["Resistance", "Area", "Total Volume"],
+      "options": [
+        "Resistance",
+        "Area",
+        "Total Volume"
+      ],
       "ans": 2,
       "summary": "Volume is Constant"
     },
     "step_2": {
       "label": "Formula",
       "q": "Relationship between R and L for constant Volume?",
-      "options": ["R ∝ L", "R ∝ L²", "R ∝ 1/L"],
+      "options": [
+        "R ∝ L",
+        "R ∝ L²",
+        "R ∝ 1/L"
+      ],
       "ans": 1,
       "summary": "R ∝ L²"
     },
     "step_3": {
       "label": "Calculation",
       "q": "New resistance if length is doubled?",
-      "options": ["2R", "4R", "R/4"],
+      "options": [
+        "2R",
+        "4R",
+        "R/4"
+      ],
       "ans": 1,
       "summary": "4R"
     },
-    "pro_tip": "Stretched? Square the factor! 2x length = 4x resistance."
+    "pro_tip": "Stretched? Square the factor! 2x length = 4x resistance.",
+    "topic": "Kinematics"
   },
   {
     "q_id": "JEE_PHY_002",
@@ -31,25 +44,38 @@
     "step_1": {
       "label": "Concept",
       "q": "In a parallel circuit, what remains the same across each resistor?",
-      "options": ["Current", "Voltage", "Power"],
+      "options": [
+        "Current",
+        "Voltage",
+        "Power"
+      ],
       "ans": 1,
       "summary": "Voltage is Same"
     },
     "step_2": {
       "label": "Formula",
       "q": "The equivalent resistance of parallel resistors is?",
-      "options": ["R₁ + R₂", "1/R₁ + 1/R₂", "(R₁ × R₂)/(R₁ + R₂)"],
+      "options": [
+        "R₁ + R₂",
+        "1/R₁ + 1/R₂",
+        "(R₁ × R₂)/(R₁ + R₂)"
+      ],
       "ans": 2,
       "summary": "R = (R₁×R₂)/(R₁+R₂)"
     },
     "step_3": {
       "label": "Calculation",
       "q": "Total current drawn from the battery?",
-      "options": ["2A", "4A", "6A"],
+      "options": [
+        "2A",
+        "4A",
+        "6A"
+      ],
       "ans": 2,
       "summary": "6A"
     },
-    "pro_tip": "Parallel = Product over Sum for two resistors. Current splits, voltage stays!"
+    "pro_tip": "Parallel = Product over Sum for two resistors. Current splits, voltage stays!",
+    "topic": "Kinematics"
   },
   {
     "q_id": "JEE_PHY_003",
@@ -57,25 +83,38 @@
     "step_1": {
       "label": "Concept",
       "q": "At the maximum height, the velocity of the ball is?",
-      "options": ["20 m/s", "10 m/s", "0 m/s"],
+      "options": [
+        "20 m/s",
+        "10 m/s",
+        "0 m/s"
+      ],
       "ans": 2,
       "summary": "Velocity = 0 at top"
     },
     "step_2": {
       "label": "Formula",
       "q": "Which equation gives maximum height? (v² = u² - 2gh)",
-      "options": ["h = v²/2g", "h = u²/2g", "h = ut + ½gt²"],
+      "options": [
+        "h = v²/2g",
+        "h = u²/2g",
+        "h = ut + ½gt²"
+      ],
       "ans": 1,
       "summary": "h = u²/2g"
     },
     "step_3": {
       "label": "Calculation",
       "q": "Maximum height reached by the ball?",
-      "options": ["10 m", "20 m", "40 m"],
+      "options": [
+        "10 m",
+        "20 m",
+        "40 m"
+      ],
       "ans": 1,
       "summary": "20 m"
     },
-    "pro_tip": "At max height, v = 0. Use v² = u² - 2gh. Height = u²/2g."
+    "pro_tip": "At max height, v = 0. Use v² = u² - 2gh. Height = u²/2g.",
+    "topic": "Forces"
   },
   {
     "q_id": "JEE_PHY_004",
@@ -83,25 +122,38 @@
     "step_1": {
       "label": "Concept",
       "q": "When object is at 2f, the image is formed at?",
-      "options": ["f", "2f", "Infinity"],
+      "options": [
+        "f",
+        "2f",
+        "Infinity"
+      ],
       "ans": 1,
       "summary": "Image at 2f"
     },
     "step_2": {
       "label": "Formula",
       "q": "The lens formula is?",
-      "options": ["1/v + 1/u = 1/f", "1/v - 1/u = 1/f", "v/u = f"],
+      "options": [
+        "1/v + 1/u = 1/f",
+        "1/v - 1/u = 1/f",
+        "v/u = f"
+      ],
       "ans": 1,
       "summary": "1/v - 1/u = 1/f"
     },
     "step_3": {
       "label": "Calculation",
       "q": "The magnification of the image is?",
-      "options": ["+1", "-1", "+2"],
+      "options": [
+        "+1",
+        "-1",
+        "+2"
+      ],
       "ans": 1,
       "summary": "m = -1"
     },
-    "pro_tip": "Object at 2f → Image at 2f. Size same, inverted. Magnification = -1."
+    "pro_tip": "Object at 2f → Image at 2f. Size same, inverted. Magnification = -1.",
+    "topic": "Energy"
   },
   {
     "q_id": "JEE_PHY_005",
@@ -109,25 +161,38 @@
     "step_1": {
       "label": "Concept",
       "q": "Which energy principle applies on a frictionless surface?",
-      "options": ["Momentum conservation", "Energy conservation", "Charge conservation"],
+      "options": [
+        "Momentum conservation",
+        "Energy conservation",
+        "Charge conservation"
+      ],
       "ans": 1,
       "summary": "Energy is Conserved"
     },
     "step_2": {
       "label": "Formula",
       "q": "At the bottom, all PE converts to KE. So?",
-      "options": ["mgh = mv", "mgh = ½mv²", "½mgh = mv²"],
+      "options": [
+        "mgh = mv",
+        "mgh = ½mv²",
+        "½mgh = mv²"
+      ],
       "ans": 1,
       "summary": "mgh = ½mv²"
     },
     "step_3": {
       "label": "Calculation",
       "q": "Speed at the bottom of the incline?",
-      "options": ["5 m/s", "10 m/s", "20 m/s"],
+      "options": [
+        "5 m/s",
+        "10 m/s",
+        "20 m/s"
+      ],
       "ans": 1,
       "summary": "10 m/s"
     },
-    "pro_tip": "No friction → PE = KE. Speed = √(2gh). Mass cancels out!"
+    "pro_tip": "No friction → PE = KE. Speed = √(2gh). Mass cancels out!",
+    "topic": "Energy"
   },
   {
     "q_id": "JEE_PHY_006",
@@ -135,25 +200,38 @@
     "step_1": {
       "label": "Concept",
       "q": "The force on the electron in a magnetic field is?",
-      "options": ["Gravitational", "Lorentz force", "Coulomb force"],
+      "options": [
+        "Gravitational",
+        "Lorentz force",
+        "Coulomb force"
+      ],
       "ans": 1,
       "summary": "Lorentz Force"
     },
     "step_2": {
       "label": "Formula",
       "q": "For circular motion in B field, radius r is?",
-      "options": ["r = mv/qB", "r = qB/mv", "r = mv²/qB"],
+      "options": [
+        "r = mv/qB",
+        "r = qB/mv",
+        "r = mv²/qB"
+      ],
       "ans": 0,
       "summary": "r = mv/qB"
     },
     "step_3": {
       "label": "Calculation",
       "q": "If speed doubles, the radius of orbit?",
-      "options": ["Halves", "Doubles", "Stays same"],
+      "options": [
+        "Halves",
+        "Doubles",
+        "Stays same"
+      ],
       "ans": 1,
       "summary": "Doubles"
     },
-    "pro_tip": "r = mv/qB. Radius is directly proportional to speed. Double v = Double r."
+    "pro_tip": "r = mv/qB. Radius is directly proportional to speed. Double v = Double r.",
+    "topic": "Forces"
   },
   {
     "q_id": "JEE_MATH_001",
@@ -161,25 +239,38 @@
     "step_1": {
       "label": "Concept",
       "q": "This is a problem of?",
-      "options": ["Combinations", "Permutations with repetition", "Simple permutations"],
+      "options": [
+        "Combinations",
+        "Permutations with repetition",
+        "Simple permutations"
+      ],
       "ans": 1,
       "summary": "Permutations with Repetition"
     },
     "step_2": {
       "label": "Formula",
       "q": "The formula for permutations with repeated elements is?",
-      "options": ["n!", "n!/(r₁!·r₂!·...)", "nCr"],
+      "options": [
+        "n!",
+        "n!/(r₁!·r₂!·...)",
+        "nCr"
+      ],
       "ans": 1,
       "summary": "n!/(r₁!·r₂!·...)"
     },
     "step_3": {
       "label": "Calculation",
       "q": "MISSISSIPPI has 11 letters (M:1, I:4, S:4, P:2). Answer is?",
-      "options": ["34,650", "11!", "39,916,800"],
+      "options": [
+        "34,650",
+        "11!",
+        "39,916,800"
+      ],
       "ans": 0,
       "summary": "34,650"
     },
-    "pro_tip": "11! / (4!·4!·2!) = 34,650. Always divide by the factorials of repeated letters!"
+    "pro_tip": "11! / (4!·4!·2!) = 34,650. Always divide by the factorials of repeated letters!",
+    "topic": "Algebra"
   },
   {
     "q_id": "JEE_MATH_002",
@@ -187,25 +278,38 @@
     "step_1": {
       "label": "Concept",
       "q": "Which rule of differentiation is needed here?",
-      "options": ["Product rule", "Chain rule", "Quotient rule"],
+      "options": [
+        "Product rule",
+        "Chain rule",
+        "Quotient rule"
+      ],
       "ans": 1,
       "summary": "Chain Rule"
     },
     "step_2": {
       "label": "Formula",
       "q": "Chain rule states: d/dx[f(g(x))] = ?",
-      "options": ["f'(x)·g(x)", "f'(g(x))·g'(x)", "f(g'(x))"],
+      "options": [
+        "f'(x)·g(x)",
+        "f'(g(x))·g'(x)",
+        "f(g'(x))"
+      ],
       "ans": 1,
       "summary": "f'(g(x))·g'(x)"
     },
     "step_3": {
       "label": "Calculation",
       "q": "d/dx[sin(x²)] = ?",
-      "options": ["cos(x²)", "2x·cos(x²)", "2x·sin(x²)"],
+      "options": [
+        "cos(x²)",
+        "2x·cos(x²)",
+        "2x·sin(x²)"
+      ],
       "ans": 1,
       "summary": "2x·cos(x²)"
     },
-    "pro_tip": "Chain rule: differentiate the outer, keep the inner, multiply by inner's derivative."
+    "pro_tip": "Chain rule: differentiate the outer, keep the inner, multiply by inner's derivative.",
+    "topic": "Calculus"
   },
   {
     "q_id": "JEE_PHY_007",
@@ -213,25 +317,38 @@
     "step_1": {
       "label": "Concept",
       "q": "After disconnection, what remains constant on the capacitor?",
-      "options": ["Voltage", "Charge", "Energy"],
+      "options": [
+        "Voltage",
+        "Charge",
+        "Energy"
+      ],
       "ans": 1,
       "summary": "Charge is Constant"
     },
     "step_2": {
       "label": "Formula",
       "q": "Energy stored in a capacitor is?",
-      "options": ["E = QV", "E = ½QV", "E = Q²V"],
+      "options": [
+        "E = QV",
+        "E = ½QV",
+        "E = Q²V"
+      ],
       "ans": 1,
       "summary": "E = ½QV = ½CV²"
     },
     "step_3": {
       "label": "Calculation",
       "q": "Energy stored in the capacitor?",
-      "options": ["0.01 J", "0.02 J", "0.04 J"],
+      "options": [
+        "0.01 J",
+        "0.02 J",
+        "0.04 J"
+      ],
       "ans": 1,
       "summary": "0.02 J"
     },
-    "pro_tip": "E = ½CV² = ½ × 4×10⁻⁶ × 100² = 0.02 J. Charge stays when disconnected!"
+    "pro_tip": "E = ½CV² = ½ × 4×10⁻⁶ × 100² = 0.02 J. Charge stays when disconnected!",
+    "topic": "Energy"
   },
   {
     "q_id": "JEE_MATH_003",
@@ -239,24 +356,37 @@
     "step_1": {
       "label": "Concept",
       "q": "The bounded region lies between?",
-      "options": ["x = 0 to x = 4", "x = -2 to x = 2", "x = 0 to x = 2"],
+      "options": [
+        "x = 0 to x = 4",
+        "x = -2 to x = 2",
+        "x = 0 to x = 2"
+      ],
       "ans": 1,
       "summary": "x = -2 to x = 2"
     },
     "step_2": {
       "label": "Formula",
       "q": "Area between two curves is?",
-      "options": ["∫(upper - lower) dx", "∫(lower - upper) dx", "∫upper · lower dx"],
+      "options": [
+        "∫(upper - lower) dx",
+        "∫(lower - upper) dx",
+        "∫upper · lower dx"
+      ],
       "ans": 0,
       "summary": "∫(upper - lower) dx"
     },
     "step_3": {
       "label": "Calculation",
       "q": "The area equals?",
-      "options": ["16/3", "32/3", "8"],
+      "options": [
+        "16/3",
+        "32/3",
+        "8"
+      ],
       "ans": 1,
       "summary": "32/3"
     },
-    "pro_tip": "Area = ∫₋₂² (4 - x²) dx = 2 × [4x - x³/3]₀² = 32/3 sq. units."
+    "pro_tip": "Area = ∫₋₂² (4 - x²) dx = 2 × [4x - x³/3]₀² = 32/3 sq. units.",
+    "topic": "Calculus"
   }
 ]

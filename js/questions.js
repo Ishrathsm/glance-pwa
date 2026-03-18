@@ -28,32 +28,39 @@ export function getQuestions() {
 }
 
 /**
- * Select questions for a sprint (2 questions, avoiding recently completed)
+ * Create a new sprint session
  */
-export function selectSprintQuestions() {
+export function createSprint(topic) {
     const state = getState();
-    const completed = state.questionsCompleted || [];
+    const rawQuestions = questionsData;
+    if (!rawQuestions || rawQuestions.length === 0) {
+        return { sprint: null, questions: [] };
+    }
 
-    // Get available questions (not recently completed)
-    let available = questionsData.filter(q => !completed.includes(q.q_id));
+    // Filter pool by topic if one is provided
+    let pool = rawQuestions;
+    if (topic) {
+        const tLow = topic.toLowerCase();
+        pool = rawQuestions.filter(q => q.topic && q.topic.toLowerCase().includes(tLow));
+        // Fallback if no questions actually have this topic assigned in the mocked JSON
+        if (pool.length === 0) pool = rawQuestions;
+    }
+
+    // Pick questions (avoiding recently completed if possible)
+    const completedIds = state.questionsCompleted || [];
+    let available = pool.filter(q => !completedIds.includes(q.q_id));
 
     // If all completed, reset and use all
     if (available.length < 2) {
-        available = [...questionsData];
+        available = [...pool]; // Use the topic-filtered pool for reset
         // Optionally clear completed list to cycle
         setState({ questionsCompleted: [] });
     }
 
     // Shuffle and pick 2
     const shuffled = available.sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, 2);
-}
+    const questions = shuffled.slice(0, 2);
 
-/**
- * Create a new sprint session
- */
-export function createSprint() {
-    const questions = selectSprintQuestions();
     const sprint = {
         questions: questions.map(q => q.q_id),
         questionIndex: 0,

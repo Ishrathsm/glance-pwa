@@ -143,10 +143,10 @@ function renderPath() {
         if (i < completedNodes) {
             node.classList.add('completed');
             // Clicking completed nodes acts like review
-            node.addEventListener('click', () => handleStartSprint());
+            node.addEventListener('click', () => handleStartSprint(topic));
         } else if (i === completedNodes) {
             node.classList.add('active');
-            node.addEventListener('click', () => handleStartSprint());
+            node.addEventListener('click', () => handleStartSprint(topic));
         } else {
             node.classList.add('locked');
         }
@@ -426,8 +426,8 @@ function handleBackHome() {
 }
 
 // --- Start Sprint ---
-function handleStartSprint() {
-    const { sprint, questions } = createSprint();
+function handleStartSprint(topic) {
+    const { sprint, questions } = createSprint(topic);
     currentQuestions = questions;
     questionXP = 0;
     questionCoins = 0;
@@ -463,7 +463,6 @@ async function init() {
 
     // Init audio
     initAudioOnInteraction();
-    loadSounds();
 
     // Check streak status
     const streakStatus = checkStreak();
