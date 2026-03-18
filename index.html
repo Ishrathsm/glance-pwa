@@ -13,6 +13,18 @@
   <link rel="apple-touch-icon" href="/assets/icons/icon-192.png" />
   <title>Glance — Get Smart in a Glance</title>
   <link rel="stylesheet" href="/css/styles.css" />
+  <script>
+    // Catch PWA install prompt immediately, before any deferred modules execute
+    window.deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      window.deferredPrompt = e;
+      // We can't access DOM yet if it's in <head>, so we flag it and let app.js read it when ready,
+      // but also listen to DOMContentLoaded just in case it's late.
+      window.pwaReadyToInstall = true;
+      document.dispatchEvent(new Event('pwa-install-ready'));
+    });
+  </script>
 </head>
 
 <body>

@@ -5,6 +5,7 @@ export default defineConfig({
   plugins: [
     VitePWA({
       registerType: 'autoUpdate',
+      injectRegister: 'inline',
       includeAssets: ['favicon.svg', 'assets/fonts/*.woff2', 'assets/sounds/*.mp3'],
       manifest: {
         name: 'Glance - Get Smart in a Glance',
@@ -18,6 +19,11 @@ export default defineConfig({
           {
             src: '/assets/icons/icon-192.png',
             sizes: '192x192',
+            type: 'image/png'
+          },
+          {
+            src: '/assets/icons/icon-512.png',
+            sizes: '512x512',
             type: 'image/png'
           },
           {

@@ -538,39 +538,36 @@ async function init() {
 init().catch(console.error);
 
 // --- PWA Installation Logic ---
-let deferredPrompt;
-window.addEventListener('beforeinstallprompt', (e) => {
-    // Prevent Chrome 67+ from automatically showing the prompt
-    e.preventDefault();
-    // Stash the event so it can be triggered later.
-    deferredPrompt = e;
-
-    // Update UI notify the user they can add to home screen
+function showInstallButton() {
     const installRow = document.getElementById('install-row');
     if (installRow) {
         installRow.style.display = 'flex';
         installRow.classList.remove('hidden');
     }
-});
+}
+
+if (window.pwaReadyToInstall || window.deferredPrompt) {
+    showInstallButton();
+} else {
+    document.addEventListener('pwa-install-ready', showInstallButton);
+}
 
 const btnInstall = document.getElementById('btn-install-app');
 if (btnInstall) {
     btnInstall.addEventListener('click', async () => {
-        if (!deferredPrompt) return;
-        // Show the prompt
-        deferredPrompt.prompt();
-        // Wait for the user to respond to the prompt
-        const { outcome } = await deferredPrompt.userChoice;
+        if (!window.deferredPrompt) return;
+        window.deferredPrompt.prompt();
+        const { outcome } = await window.deferredPrompt.userChoice;
         if (outcome === 'accepted') {
             console.log('User accepted the A2HS prompt');
             const installRow = document.getElementById('install-row');
             if (installRow) installRow.style.display = 'none';
         }
-        deferredPrompt = null;
+        window.deferredPrompt = null;
     });
 }
+
 window.addEventListener('appinstalled', () => {
     const installRow = document.getElementById('install-row');
     if (installRow) installRow.style.display = 'none';
 });
-
