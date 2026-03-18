@@ -17,7 +17,7 @@ import {
 } from './animations.js';
 
 // --- Screen Management ---
-const screens = ['screen-home', 'screen-question', 'screen-success', 'screen-sprint-complete', 'screen-revive'];
+const screens = ['screen-splash', 'screen-home', 'screen-profile', 'screen-question', 'screen-success', 'screen-sprint-complete', 'screen-revive'];
 
 function showScreen(screenId) {
     screens.forEach(id => {
@@ -25,6 +25,24 @@ function showScreen(screenId) {
         if (el) {
             el.classList.toggle('active', id === screenId);
         }
+    });
+
+    // Handle bottom nav visibility
+    const bottomNav = document.getElementById('bottom-nav');
+    if (bottomNav) {
+        if (screenId === 'screen-home' || screenId === 'screen-profile') {
+            bottomNav.classList.remove('hidden');
+        } else {
+            bottomNav.classList.add('hidden');
+        }
+    }
+}
+
+// --- Bottom Nav Handle ---
+function switchTab(targetId) {
+    showScreen(targetId);
+    document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.target === targetId);
     });
 }
 
@@ -56,8 +74,76 @@ function updateHomeScreen() {
     if (sprint && sprint.results) {
         progress = sprint.results.length;
     }
-    document.getElementById('goal-text').textContent = `Today: ${progress} / 2`;
-    document.getElementById('goal-fill').style.width = `${(progress / 2) * 100}%`;
+    const goalText = document.getElementById('goal-text');
+    if (goalText) goalText.textContent = `Today: ${progress} / 2`;
+    const goalFill = document.getElementById('goal-fill');
+    if (goalFill) goalFill.style.width = `${(progress / 2) * 100}%`;
+
+    // --- Update Profile Screen ---
+    document.getElementById('profile-xp').textContent = state.xp;
+    // For now longest streak is just current streak since we dont track historical max
+    document.getElementById('profile-streak-max').textContent = state.streak;
+
+    // Calculate global accuracy from sprintHistory
+    let totalSteps = 0;
+    let correctSteps = 0;
+    state.sprintHistory.forEach(s => {
+        if (!s.results) return;
+        s.results.forEach(r => {
+            if (!r.stepsCorrect) return;
+            totalSteps += r.stepsCorrect.length;
+            correctSteps += r.stepsCorrect.filter(Boolean).length;
+        });
+    });
+    const accuracy = totalSteps > 0 ? Math.round((correctSteps / totalSteps) * 100) : 0;
+    document.getElementById('profile-accuracy').textContent = `${accuracy}%`;
+
+    document.getElementById('profile-mastered').textContent = state.questionsCompleted ? state.questionsCompleted.length : 0;
+
+    const errorsCount = state.errorBank ? state.errorBank.length : 0;
+    document.getElementById('profile-errors-count').textContent = `${errorsCount} mistakes logged`;
+}
+
+// --- Render Learning Path (Home) ---
+function renderPath() {
+    const pathContainer = document.getElementById('learning-path');
+    if (!pathContainer) return;
+
+    pathContainer.innerHTML = '';
+    const state = getState();
+    const completedNodes = Math.floor((state.questionsCompleted || []).length / 2);
+
+    // Create 6 dummy nodes to show progression
+    const topics = ['Kinematics', 'Trig', 'Forces', 'Calculus', 'Energy', 'Algebra'];
+    const emojis = ['🚀', '📐', '🍎', '📈', '⚡', '✖️'];
+
+    topics.forEach((topic, i) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'path-node-wrapper';
+
+        const node = document.createElement('div');
+        node.className = 'path-node';
+        node.textContent = emojis[i];
+
+        const label = document.createElement('span');
+        label.className = 'node-label';
+        label.textContent = topic;
+
+        if (i < completedNodes) {
+            node.classList.add('completed');
+            // Clicking completed nodes acts like review
+            node.addEventListener('click', () => handleStartSprint());
+        } else if (i === completedNodes) {
+            node.classList.add('active');
+            node.addEventListener('click', () => handleStartSprint());
+        } else {
+            node.classList.add('locked');
+        }
+
+        wrapper.appendChild(node);
+        wrapper.appendChild(label);
+        pathContainer.appendChild(wrapper);
+    });
 }
 
 // --- Render Question Step ---
@@ -323,8 +409,9 @@ function handleFinishSprint() {
 
 // --- Back to Home ---
 function handleBackHome() {
-    showScreen('screen-home');
+    switchTab('screen-home');
     updateHomeScreen();
+    renderPath();
 }
 
 // --- Start Sprint ---
@@ -373,7 +460,7 @@ async function init() {
     // Update home screen
     updateHomeScreen();
 
-    // Show appropriate screen
+    // Show appropriate screen behind splash
     if (streakStatus.status === 'broken' && streakStatus.streak > 0) {
         // Show revive screen
         document.getElementById('revive-streak').textContent = `🔥 ${streakStatus.streak}`;
@@ -389,15 +476,49 @@ async function init() {
         showScreen('screen-home');
     }
 
+    renderPath();
+
+    // Remove splash screen after 1.5s
+    setTimeout(() => {
+        const splash = document.getElementById('screen-splash');
+        if (splash) {
+            splash.style.opacity = '0';
+            splash.style.transform = 'scale(1.1)';
+            setTimeout(() => splash.classList.remove('active'), 500);
+        }
+    }, 1500);
+
     // --- Event Listeners ---
-    document.getElementById('btn-start-sprint').addEventListener('click', handleStartSprint);
     document.getElementById('btn-check').addEventListener('click', handleCheck);
     document.getElementById('btn-continue').addEventListener('click', handleContinue);
-    document.getElementById('btn-next-question').addEventListener('click', handleNextQuestion);
-    document.getElementById('btn-finish-sprint').addEventListener('click', handleFinishSprint);
-    document.getElementById('btn-back-home').addEventListener('click', handleBackHome);
-    document.getElementById('btn-revive').addEventListener('click', handleRevive);
-    document.getElementById('btn-fresh-start').addEventListener('click', handleFreshStart);
+
+    const btnNext = document.getElementById('btn-next-question');
+    if (btnNext) btnNext.addEventListener('click', handleNextQuestion);
+
+    const btnFinish = document.getElementById('btn-finish-sprint');
+    if (btnFinish) btnFinish.addEventListener('click', handleFinishSprint);
+
+    const btnBack = document.getElementById('btn-back-home');
+    if (btnBack) btnBack.addEventListener('click', handleBackHome);
+
+    const btnRevive = document.getElementById('btn-revive');
+    if (btnRevive) btnRevive.addEventListener('click', handleRevive);
+
+    const btnFresh = document.getElementById('btn-fresh-start');
+    if (btnFresh) btnFresh.addEventListener('click', handleFreshStart);
+
+    // Bottom Nav Listeners
+    document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.addEventListener('click', () => {
+            switchTab(btn.dataset.target);
+            if (btn.dataset.target === 'screen-home') {
+                updateHomeScreen();
+                renderPath();
+            } else if (btn.dataset.target === 'screen-profile') {
+                updateHomeScreen(); // also updates profile data
+            }
+        });
+    });
 
     // State change listener for reactive updates
     onStateChange(() => {
