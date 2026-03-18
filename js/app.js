@@ -494,7 +494,10 @@ async function init() {
         if (splash) {
             splash.style.opacity = '0';
             splash.style.transform = 'scale(1.1)';
-            setTimeout(() => splash.classList.remove('active'), 500);
+            setTimeout(() => {
+                splash.classList.remove('active');
+                splash.style.display = 'none'; // Force hide to prevent pointer-events blocking
+            }, 500);
         }
     }, 1500);
 
