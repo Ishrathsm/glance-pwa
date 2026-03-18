@@ -1,0 +1,13 @@
+Manifest.json:
+
+    short_name: "Glance"
+
+    display: "standalone" (removes browser bars)
+
+    theme_color: #BEF264
+
+    icons: [Upload your Yellow 'g' Icon]
+
+Service Worker:
+
+    Implement "Cache-First" for the images and fonts folder to ensure 60fps performance even on slow networks.

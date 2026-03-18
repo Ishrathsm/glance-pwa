@@ -1,0 +1,32 @@
+{
+    "q_id": "JEE_PHY_001",
+    "context": "A copper wire of resistance R is stretched so that its length increases by 100%.",
+    "step_1": {
+        "q": "Which property remains strictly constant?",
+        "options": [
+            "Resistance",
+            "Area",
+            "Total Volume"
+        ],
+        "ans": 2
+    },
+    "step_2": {
+        "q": "Relationship between R and L for constant Volume?",
+        "options": [
+            "R ∝ L",
+            "R ∝ L²",
+            "R ∝ 1/L"
+        ],
+        "ans": 1
+    },
+    "step_3": {
+        "q": "New resistance if length is doubled?",
+        "options": [
+            "2R",
+            "4R",
+            "R/4"
+        ],
+        "ans": 1
+    },
+    "pro_tip": "Stretched? Square the factor! 2x length = 4x resistance."
+}
