@@ -84,28 +84,35 @@ function updateHomeScreen() {
     if (goalFill) goalFill.style.width = `${(progress / 2) * 100}%`;
 
     // --- Update Profile Screen ---
-    document.getElementById('profile-xp').textContent = state.xp;
+    const profileXp = document.getElementById('profile-xp');
+    if (profileXp) profileXp.textContent = state.xp;
+
     // For now longest streak is just current streak since we dont track historical max
-    document.getElementById('profile-streak-max').textContent = state.streak;
+    const profileStreakMax = document.getElementById('profile-streak-max');
+    if (profileStreakMax) profileStreakMax.textContent = state.streak;
 
     // Calculate global accuracy from sprintHistory
     let totalSteps = 0;
     let correctSteps = 0;
-    state.sprintHistory.forEach(s => {
-        if (!s.results) return;
+    (state.sprintHistory || []).forEach(s => {
+        if (!s || !s.results) return;
         s.results.forEach(r => {
-            if (!r.stepsCorrect) return;
+            if (!r || !r.stepsCorrect) return;
             totalSteps += r.stepsCorrect.length;
             correctSteps += r.stepsCorrect.filter(Boolean).length;
         });
     });
-    const accuracy = totalSteps > 0 ? Math.round((correctSteps / totalSteps) * 100) : 0;
-    document.getElementById('profile-accuracy').textContent = `${accuracy}%`;
 
-    document.getElementById('profile-mastered').textContent = state.questionsCompleted ? state.questionsCompleted.length : 0;
+    const accuracy = totalSteps > 0 ? Math.round((correctSteps / totalSteps) * 100) : 0;
+    const profileAccuracy = document.getElementById('profile-accuracy');
+    if (profileAccuracy) profileAccuracy.textContent = `${accuracy}%`;
+
+    const profileMastered = document.getElementById('profile-mastered');
+    if (profileMastered) profileMastered.textContent = state.questionsCompleted ? state.questionsCompleted.length : 0;
 
     const errorsCount = state.errorBank ? state.errorBank.length : 0;
-    document.getElementById('profile-errors-count').textContent = `${errorsCount} mistakes logged`;
+    const profileErrors = document.getElementById('profile-errors-count');
+    if (profileErrors) profileErrors.textContent = `${errorsCount} mistakes logged`;
 }
 
 // --- Render Learning Path (Home) ---
