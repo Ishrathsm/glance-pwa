@@ -190,6 +190,33 @@
       </div>
     </section>
 
+    <!-- ============ BLITZ SCREEN (Rapid Fire) ============ -->
+    <section id="screen-blitz" class="screen" aria-label="Blitz Training"
+      style="display: flex; flex-direction: column;">
+      <div class="top-bar">
+        <button class="btn-icon" id="btn-quit-blitz" aria-label="Quit">✖</button>
+        <div class="progress-bar" style="flex:1; margin: 0 16px;">
+          <div class="progress-fill" id="blitz-progress-fill" style="width: 0%; background: var(--accent-dark);"></div>
+        </div>
+        <div id="blitz-counter" style="font-weight: 800; font-size: 0.875rem;">1/5</div>
+      </div>
+
+      <div
+        style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 24px;">
+        <div class="question-card" id="blitz-card"
+          style="width: 100%; min-height: 250px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 1.5rem; font-weight: 800; border: 4px solid var(--border);">
+          <span id="blitz-statement">Loading...</span>
+        </div>
+      </div>
+
+      <div style="padding: 24px; display: flex; gap: 16px;">
+        <button class="btn btn-primary" id="btn-blitz-false"
+          style="flex: 1; background: #FF4B4B; border-color: #CC0000; box-shadow: 0 4px 0 #CC0000; height: 80px; font-size: 1.5rem;">FALSE</button>
+        <button class="btn btn-primary" id="btn-blitz-true"
+          style="flex: 1; height: 80px; font-size: 1.5rem;">TRUE</button>
+      </div>
+    </section>
+
     <!-- ============ SPRINT COMPLETE SCREEN ============ -->
     <section id="screen-sprint-complete" class="screen sprint-complete" aria-label="Sprint Complete">
       <span class="success-emoji">🏆</span>

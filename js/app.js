@@ -7,7 +7,8 @@ import { checkStreak, recordStudySession, reviveStreak, resetStreak } from './st
 import {
     loadQuestions, createSprint, getCurrentQuestion,
     getStepData, checkAnswer, recordStepResult,
-    getSprintSummary, endSprint
+    getSprintSummary, endSprint,
+    createBlitz, getCurrentBlitzQuestion, submitBlitzAnswer, getBlitzSummary, endBlitz
 } from './questions.js';
 import { checkStreakMilestones } from './rewards.js';
 import {
@@ -17,7 +18,7 @@ import {
 import { getCurrentUser, signUpUser, signInUser, signOutUser, syncStateToCloud, fetchStateFromCloud, signInWithGoogle, onAuthChange } from './supabase.js';
 
 // --- Screen Management ---
-const screens = ['screen-splash', 'screen-home', 'screen-profile', 'screen-question', 'screen-success', 'screen-sprint-complete', 'screen-revive'];
+const screens = ['screen-splash', 'screen-home', 'screen-profile', 'screen-question', 'screen-blitz', 'screen-success', 'screen-sprint-complete', 'screen-revive'];
 
 function showScreen(screenId) {
     screens.forEach(id => {
@@ -451,6 +452,89 @@ function handleNextQuestion() {
     renderQuestionStep();
 }
 
+// ============================================
+// BLITZ ENGINE CONTROLLERS
+// ============================================
+
+function handleStartBlitz() {
+    createBlitz();
+    showScreen('screen-blitz');
+    renderBlitzQuestion();
+}
+
+function renderBlitzQuestion() {
+    const q = getCurrentBlitzQuestion();
+    if (!q) {
+        handleFinishBlitz();
+        return;
+    }
+
+    const state = getState();
+    const currentIdx = state.currentBlitzIndex || 0; // if it was tracking
+    // Actually we exported currentBlitzIndex from questions.js but we can't read it easily without an import if we didn't export it
+    // Wait, import is there but we can also just use the length of the sprint.
+    // Let's rely on getBlitzSummary to know how many we've answered.
+    const summary = getBlitzSummary();
+    const answered = summary ? summary.questionsAnswered : 0;
+
+    document.getElementById('blitz-statement').textContent = q.statement;
+    document.getElementById('blitz-counter').textContent = `${answered + 1}/5`;
+    document.getElementById('blitz-progress-fill').style.width = `${(answered / 5) * 100}%`;
+}
+
+function handleBlitzAnswer(isTrueSelected) {
+    hapticTap();
+    const result = submitBlitzAnswer(isTrueSelected);
+    if (!result) return;
+
+    if (result.isCorrect) {
+        playSound('success');
+        hapticSuccess();
+    } else {
+        playSound('wrong');
+        // Vibrate differently for wrong? 
+    }
+
+    if (result.isFinished) {
+        setTimeout(handleFinishBlitz, 300);
+    } else {
+        setTimeout(renderBlitzQuestion, 300);
+    }
+}
+
+async function handleFinishBlitz() {
+    const summary = getBlitzSummary();
+    if (!summary) {
+        showScreen('screen-home');
+        return;
+    }
+
+    // A blitz ALWAYS counts as a study session specifically engineered to save a streak
+    recordStudySession();
+
+    showScreen('screen-sprint-complete');
+
+    document.getElementById('sprint-questions').textContent = `${summary.questionsAnswered} / 5`;
+    document.getElementById('sprint-accuracy').textContent = `${summary.accuracy}%`;
+    document.getElementById('sprint-xp').textContent = `+${summary.totalXP}`;
+    document.getElementById('sprint-coins').textContent = `+${summary.totalCoins}`;
+
+    endBlitz();
+
+    const newState = getState();
+    await syncStateToCloud(newState);
+}
+
+function handleQuitBlitz() {
+    endBlitz();
+    showScreen('screen-home');
+    updateHomeScreen();
+}
+
+// ============================================
+// SPRINT ENGINE CONTROLLERS
+// ============================================
+
 // --- Sprint Complete ---
 async function handleFinishSprint() {
     const summary = getSprintSummary();
@@ -601,13 +685,28 @@ async function init() {
     const btnFresh = document.getElementById('btn-fresh-start');
     if (btnFresh) btnFresh.addEventListener('click', handleFreshStart);
 
+    const btnDailyBlitz = document.getElementById('btn-daily-blitz');
+    if (btnDailyBlitz) btnDailyBlitz.addEventListener('click', () => {
+        hapticTap();
+        handleStartBlitz();
+    });
+
+    // --- Blitz Listeners ---
+    const btnBlitzTrue = document.getElementById('btn-blitz-true');
+    if (btnBlitzTrue) btnBlitzTrue.addEventListener('click', () => handleBlitzAnswer(true));
+
+    const btnBlitzFalse = document.getElementById('btn-blitz-false');
+    if (btnBlitzFalse) btnBlitzFalse.addEventListener('click', () => handleBlitzAnswer(false));
+
+    const btnQuitBlitz = document.getElementById('btn-quit-blitz');
+    if (btnQuitBlitz) btnQuitBlitz.addEventListener('click', handleQuitBlitz);
+
     // Bottom Nav Listeners
     document.querySelectorAll('.nav-item').forEach(btn => {
         btn.addEventListener('click', () => {
             if (btn.id === 'nav-btn-blitz') {
                 hapticTap();
-                // Randomly trigger a Sprint until Stage 3 Blitz is built
-                handleStartSprint('Kinematics');
+                handleStartBlitz();
                 return;
             }
 

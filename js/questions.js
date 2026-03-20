@@ -213,3 +213,73 @@ export function endSprint() {
         sprintHistory: history
     });
 }
+
+// ============================================
+// BLITZ LOGIC (Reflex Mode)
+// ============================================
+
+export let currentBlitz = null;
+export let currentBlitzIndex = 0;
+export let blitzHistory = [];
+
+const MOCK_BLITZ_DB = [
+    { statement: "Light travels faster in water than in a vacuum.", isTrue: false },
+    { statement: "The sum of angles in a triangle is 180 degrees.", isTrue: true },
+    { statement: "In calculus, the derivative of a constant is always zero.", isTrue: true },
+    { statement: "Kinetic energy is formulated as mv^2 without a half multiplier.", isTrue: false },
+    { statement: "Gravity accelerates all objects in a vacuum equally, regardless of mass.", isTrue: true },
+    { statement: "If you multiply two negative numbers, the result is negative.", isTrue: false },
+    { statement: "A circle has an infinite number of lines of symmetry.", isTrue: true }
+];
+
+export function createBlitz() {
+    const shuffled = [...MOCK_BLITZ_DB].sort(() => 0.5 - Math.random());
+    currentBlitz = shuffled.slice(0, 5);
+    currentBlitzIndex = 0;
+    blitzHistory = [];
+    return currentBlitz;
+}
+
+export function getCurrentBlitzQuestion() {
+    if (!currentBlitz || currentBlitzIndex >= currentBlitz.length) return null;
+    return currentBlitz[currentBlitzIndex];
+}
+
+export function submitBlitzAnswer(userSaidTrue) {
+    const q = getCurrentBlitzQuestion();
+    if (!q) return null;
+
+    const isCorrect = (q.isTrue === userSaidTrue);
+    blitzHistory.push({
+        statement: q.statement,
+        isCorrect: isCorrect
+    });
+
+    currentBlitzIndex++;
+
+    return {
+        isCorrect,
+        isFinished: currentBlitzIndex >= currentBlitz.length
+    };
+}
+
+export function getBlitzSummary() {
+    if (!currentBlitz) return null;
+    const answered = blitzHistory.length;
+    const correct = blitzHistory.filter(h => h.isCorrect).length;
+    const acc = answered === 0 ? 0 : Math.round((correct / answered) * 100);
+
+    return {
+        totalQuestions: 5,
+        questionsAnswered: answered,
+        accuracy: acc,
+        totalXP: correct * 5,
+        totalCoins: correct * 2
+    };
+}
+
+export function endBlitz() {
+    currentBlitz = null;
+    currentBlitzIndex = 0;
+    blitzHistory = [];
+}
