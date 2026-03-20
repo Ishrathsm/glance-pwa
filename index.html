@@ -220,8 +220,14 @@
 
       <div class="profile-header">
         <div class="avatar-circle">👤</div>
-        <h1 class="profile-name">Guest Learner</h1>
-        <p class="profile-joined">Joined March 2026</p>
+        <h1 class="profile-name" id="profile-name-text">Guest Learner</h1>
+        <p class="profile-joined" id="profile-email-text">Not logged in</p>
+        <div id="auth-actions" style="margin-top: 12px; display: flex; gap: 8px;">
+          <button class="btn btn-secondary" id="btn-login-modal" style="padding: 10px 16px; font-size: 0.9rem;">Save
+            Progress</button>
+          <button class="btn btn-ghost hidden" id="btn-logout" style="padding: 10px 16px; font-size: 0.9rem;">Sign
+            Out</button>
+        </div>
       </div>
 
       <div class="stats-grid">
@@ -324,6 +330,24 @@
         <span class="nav-label">Profile</span>
       </button>
     </nav>
+
+    <!-- AUTH MODAL (Hidden by default) -->
+    <div id="auth-modal" class="modal-overlay hidden">
+      <div class="modal-content">
+        <button id="btn-close-modal" class="modal-close" aria-label="Close">✖</button>
+        <h2 style="margin-bottom:8px">Cloud Sync</h2>
+        <p style="color:var(--ink-light); margin-bottom: 24px; font-size: 0.875rem;">Your stats are offline. Claim your
+          progress!</p>
+        <input type="email" id="auth-email" placeholder="Email address" class="auth-input">
+        <input type="password" id="auth-password" placeholder="Password" class="auth-input">
+        <div style="display:flex; flex-direction:column; gap:12px; margin-top: 8px;">
+          <button class="btn btn-primary" id="btn-auth-signin">Sign In</button>
+          <button class="btn btn-ghost" id="btn-auth-signup">Create Free Account</button>
+        </div>
+        <p id="auth-error-msg"
+          style="color:var(--error-text); margin-top:16px; font-size:0.875rem; text-align:center; height:1rem;"></p>
+      </div>
+    </div>
 
   </div>
 

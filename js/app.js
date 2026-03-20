@@ -15,6 +15,7 @@ import {
     countUp, collapseStep, showNextStep, loadSounds,
     initAudioOnInteraction
 } from './animations.js';
+import { getCurrentUser, signUpUser, signInUser, signOutUser, syncStateToCloud, fetchStateFromCloud } from './supabase.js';
 
 // --- Screen Management ---
 const screens = ['screen-splash', 'screen-home', 'screen-profile', 'screen-question', 'screen-success', 'screen-sprint-complete', 'screen-revive'];
@@ -58,8 +59,11 @@ let questionXP = 0;
 let questionCoins = 0;
 
 // --- Update Home Screen UI ---
-function updateHomeScreen() {
+async function updateHomeScreen() {
     const state = getState();
+
+    // Check Cloud Auth State
+    const user = await getCurrentUser();
 
     // Streak
     const streakEl = document.getElementById('streak-count');
@@ -84,6 +88,23 @@ function updateHomeScreen() {
     if (goalFill) goalFill.style.width = `${(progress / 2) * 100}%`;
 
     // --- Update Profile Screen ---
+    const profileName = document.getElementById('profile-name-text');
+    const profileEmail = document.getElementById('profile-email-text');
+    const btnLoginModal = document.getElementById('btn-login-modal');
+    const btnLogout = document.getElementById('btn-logout');
+
+    if (user && profileName) {
+        profileName.textContent = user.email.split('@')[0];
+        profileEmail.textContent = user.email;
+        if (btnLoginModal) btnLoginModal.classList.add('hidden');
+        if (btnLogout) btnLogout.classList.remove('hidden');
+    } else if (profileName) {
+        profileName.textContent = 'Guest Learner';
+        profileEmail.textContent = 'Offline progress only';
+        if (btnLoginModal) btnLoginModal.classList.remove('hidden');
+        if (btnLogout) btnLogout.classList.add('hidden');
+    }
+
     const profileXp = document.getElementById('profile-xp');
     if (profileXp) profileXp.textContent = state.xp;
 
@@ -395,7 +416,7 @@ function handleNextQuestion() {
 }
 
 // --- Sprint Complete ---
-function handleFinishSprint() {
+async function handleFinishSprint() {
     const summary = getSprintSummary();
     if (!summary) {
         showScreen('screen-home');
@@ -416,6 +437,10 @@ function handleFinishSprint() {
     document.getElementById('sprint-coins').textContent = `+${summary.totalCoins}`;
 
     endSprint();
+
+    // Sync new resulting state
+    const newState = getState();
+    await syncStateToCloud(newState);
 }
 
 // --- Back to Home ---
@@ -580,3 +605,88 @@ window.addEventListener('appinstalled', () => {
     const installRow = document.getElementById('install-row');
     if (installRow) installRow.style.display = 'none';
 });
+
+// --- Auth Modal Logic ---
+const authModal = document.getElementById('auth-modal');
+const btnLoginModal = document.getElementById('btn-login-modal');
+const btnCloseModal = document.getElementById('btn-close-modal');
+const btnAuthSignIn = document.getElementById('btn-auth-signin');
+const btnAuthSignUp = document.getElementById('btn-auth-signup');
+const btnLogout = document.getElementById('btn-logout');
+const authError = document.getElementById('auth-error-msg');
+const authEmail = document.getElementById('auth-email');
+const authPassword = document.getElementById('auth-password');
+
+if (btnLoginModal) {
+    btnLoginModal.addEventListener('click', () => {
+        authModal.classList.remove('hidden');
+        authModal.style.display = 'flex';
+    });
+}
+
+if (btnCloseModal) {
+    btnCloseModal.addEventListener('click', () => {
+        authModal.classList.add('hidden');
+        authModal.style.display = 'none';
+        authError.textContent = '';
+    });
+}
+
+if (btnAuthSignUp) {
+    btnAuthSignUp.addEventListener('click', async () => {
+        authError.textContent = 'Loading...';
+        btnAuthSignUp.disabled = true;
+        const { data, error } = await signUpUser(authEmail.value, authPassword.value);
+        btnAuthSignUp.disabled = false;
+
+        if (error) {
+            authError.textContent = error.message;
+        } else {
+            // Push initial local state immediately to cloud on fresh account creation
+            await syncStateToCloud(getState());
+            authModal.classList.add('hidden');
+            authModal.style.display = 'none';
+            updateHomeScreen();
+        }
+    });
+}
+
+if (btnAuthSignIn) {
+    btnAuthSignIn.addEventListener('click', async () => {
+        authError.textContent = 'Loading...';
+        btnAuthSignIn.disabled = true;
+        const { data, error } = await signInUser(authEmail.value, authPassword.value);
+        btnAuthSignIn.disabled = false;
+
+        if (error) {
+            authError.textContent = error.message;
+        } else {
+            // Check if cloud state exists. If cloud state has more XP, load it.
+            const cloudState = await fetchStateFromCloud();
+            if (cloudState && cloudState.xp > getState().xp) {
+                setState({
+                    xp: cloudState.xp,
+                    coins: cloudState.coins,
+                    streak: cloudState.streak,
+                    lastStudyDate: cloudState.last_study_date,
+                    questionsCompleted: cloudState.questions_completed,
+                    errorBank: cloudState.error_bank
+                });
+            } else {
+                // Else overwrite cloud with our local current session (device priority)
+                await syncStateToCloud(getState());
+            }
+
+            authModal.classList.add('hidden');
+            authModal.style.display = 'none';
+            updateHomeScreen();
+        }
+    });
+}
+
+if (btnLogout) {
+    btnLogout.addEventListener('click', async () => {
+        await signOutUser();
+        updateHomeScreen();
+    });
+}
