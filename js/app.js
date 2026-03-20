@@ -12,10 +12,9 @@ import {
 import { checkStreakMilestones } from './rewards.js';
 import {
     hapticTap, hapticSuccess, playSound, showConfetti,
-    countUp, collapseStep, showNextStep, loadSounds,
     initAudioOnInteraction
 } from './animations.js';
-import { getCurrentUser, signUpUser, signInUser, signOutUser, syncStateToCloud, fetchStateFromCloud } from './supabase.js';
+import { getCurrentUser, signUpUser, signInUser, signOutUser, syncStateToCloud, fetchStateFromCloud, signInWithGoogle, onAuthChange } from './supabase.js';
 
 // --- Screen Management ---
 const screens = ['screen-splash', 'screen-home', 'screen-profile', 'screen-question', 'screen-success', 'screen-sprint-complete', 'screen-revive'];
@@ -483,6 +482,26 @@ function handleFreshStart() {
 
 // --- Init ---
 async function init() {
+    // Listen for Auth changes globally (handles OAuth redirects automatically)
+    onAuthChange(async (event, session) => {
+        if (event === 'SIGNED_IN') {
+            const cloudState = await fetchStateFromCloud();
+            if (cloudState && cloudState.xp > getState().xp) {
+                setState({
+                    xp: cloudState.xp,
+                    coins: cloudState.coins,
+                    streak: cloudState.streak,
+                    lastStudyDate: cloudState.last_study_date,
+                    questionsCompleted: cloudState.questions_completed,
+                    errorBank: cloudState.error_bank
+                });
+            } else {
+                await syncStateToCloud(getState());
+            }
+            updateHomeScreen();
+        }
+    });
+
     // Load questions
     await loadQuestions();
 
@@ -612,6 +631,7 @@ const btnLoginModal = document.getElementById('btn-login-modal');
 const btnCloseModal = document.getElementById('btn-close-modal');
 const btnAuthSignIn = document.getElementById('btn-auth-signin');
 const btnAuthSignUp = document.getElementById('btn-auth-signup');
+const btnAuthGoogle = document.getElementById('btn-auth-google');
 const btnLogout = document.getElementById('btn-logout');
 const authError = document.getElementById('auth-error-msg');
 const authEmail = document.getElementById('auth-email');
@@ -632,6 +652,19 @@ if (btnCloseModal) {
     });
 }
 
+if (btnAuthGoogle) {
+    btnAuthGoogle.addEventListener('click', async () => {
+        authError.textContent = 'Redirecting...';
+        btnAuthGoogle.disabled = true;
+        const { error } = await signInWithGoogle();
+        if (error) {
+            authError.textContent = error.message;
+            btnAuthGoogle.disabled = false;
+        }
+        // If successful, the page naturally redirects to Google and then back
+    });
+}
+
 if (btnAuthSignUp) {
     btnAuthSignUp.addEventListener('click', async () => {
         authError.textContent = 'Loading...';
@@ -642,11 +675,8 @@ if (btnAuthSignUp) {
         if (error) {
             authError.textContent = error.message;
         } else {
-            // Push initial local state immediately to cloud on fresh account creation
-            await syncStateToCloud(getState());
             authModal.classList.add('hidden');
             authModal.style.display = 'none';
-            updateHomeScreen();
         }
     });
 }
@@ -661,25 +691,8 @@ if (btnAuthSignIn) {
         if (error) {
             authError.textContent = error.message;
         } else {
-            // Check if cloud state exists. If cloud state has more XP, load it.
-            const cloudState = await fetchStateFromCloud();
-            if (cloudState && cloudState.xp > getState().xp) {
-                setState({
-                    xp: cloudState.xp,
-                    coins: cloudState.coins,
-                    streak: cloudState.streak,
-                    lastStudyDate: cloudState.last_study_date,
-                    questionsCompleted: cloudState.questions_completed,
-                    errorBank: cloudState.error_bank
-                });
-            } else {
-                // Else overwrite cloud with our local current session (device priority)
-                await syncStateToCloud(getState());
-            }
-
             authModal.classList.add('hidden');
             authModal.style.display = 'none';
-            updateHomeScreen();
         }
     });
 }

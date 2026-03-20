@@ -27,9 +27,23 @@ export async function signInUser(email, password) {
     return { data, error };
 }
 
+export async function signInWithGoogle() {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+            redirectTo: window.location.origin, // Returns back to the PWA home
+        }
+    });
+    return { data, error };
+}
+
 export async function signOutUser() {
     const { error } = await supabase.auth.signOut();
     return error;
+}
+
+export function onAuthChange(callback) {
+    supabase.auth.onAuthStateChange(callback);
 }
 
 // Syncer functions will go here
