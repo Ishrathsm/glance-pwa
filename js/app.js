@@ -480,6 +480,18 @@ function renderBlitzQuestion() {
     document.getElementById('blitz-statement').textContent = q.statement;
     document.getElementById('blitz-counter').textContent = `${answered + 1}/5`;
     document.getElementById('blitz-progress-fill').style.width = `${(answered / 5) * 100}%`;
+
+    // Immediately snap the card back to center for the new question
+    const card = document.getElementById('blitz-card');
+    const stampTrue = document.getElementById('blitz-stamp-true');
+    const stampFalse = document.getElementById('blitz-stamp-false');
+
+    if (card) {
+        card.style.transition = 'none';
+        card.style.transform = 'translateX(0) rotate(0)';
+        if (stampTrue) stampTrue.style.opacity = '0';
+        if (stampFalse) stampFalse.style.opacity = '0';
+    }
 }
 
 function handleBlitzAnswer(isTrueSelected) {
@@ -691,12 +703,73 @@ async function init() {
         handleStartBlitz();
     });
 
-    // --- Blitz Listeners ---
-    const btnBlitzTrue = document.getElementById('btn-blitz-true');
-    if (btnBlitzTrue) btnBlitzTrue.addEventListener('click', () => handleBlitzAnswer(true));
+    // --- Blitz Swipe Listeners ---
+    const blitzCard = document.getElementById('blitz-card');
+    const stampTrue = document.getElementById('blitz-stamp-true');
+    const stampFalse = document.getElementById('blitz-stamp-false');
 
-    const btnBlitzFalse = document.getElementById('btn-blitz-false');
-    if (btnBlitzFalse) btnBlitzFalse.addEventListener('click', () => handleBlitzAnswer(false));
+    if (blitzCard) {
+        let isDragging = false;
+        let startX = 0;
+        let currentX = 0;
+        const SWIPE_THRESHOLD = 100;
+
+        blitzCard.addEventListener('pointerdown', (e) => {
+            isDragging = true;
+            startX = e.clientX;
+            blitzCard.style.transition = 'none';
+        });
+
+        blitzCard.addEventListener('pointermove', (e) => {
+            if (!isDragging) return;
+            currentX = e.clientX - startX;
+            const rotation = currentX * 0.05;
+            blitzCard.style.transform = `translateX(${currentX}px) rotate(${rotation}deg)`;
+
+            // Opacities for stamps
+            if (currentX > 0) {
+                stampTrue.style.opacity = Math.min(1, currentX / SWIPE_THRESHOLD);
+                stampFalse.style.opacity = 0;
+            } else {
+                stampFalse.style.opacity = Math.min(1, Math.abs(currentX) / SWIPE_THRESHOLD);
+                stampTrue.style.opacity = 0;
+            }
+        });
+
+        blitzCard.addEventListener('pointerup', () => {
+            if (!isDragging) return;
+            isDragging = false;
+            blitzCard.style.transition = 'transform 0.3s ease-out';
+
+            if (currentX > SWIPE_THRESHOLD) {
+                // Swiped Right -> TRUE
+                blitzCard.style.transform = `translateX(500px) rotate(30deg)`;
+                handleBlitzAnswer(true);
+            } else if (currentX < -SWIPE_THRESHOLD) {
+                // Swiped Left -> FALSE
+                blitzCard.style.transform = `translateX(-500px) rotate(-30deg)`;
+                handleBlitzAnswer(false);
+            } else {
+                // Snap back
+                blitzCard.style.transform = 'translateX(0) rotate(0)';
+                stampTrue.style.opacity = 0;
+                stampFalse.style.opacity = 0;
+            }
+            currentX = 0;
+        });
+
+        // Handle cancel
+        blitzCard.addEventListener('pointerleave', () => {
+            if (isDragging) {
+                isDragging = false;
+                blitzCard.style.transition = 'transform 0.3s ease-out';
+                blitzCard.style.transform = 'translateX(0) rotate(0)';
+                stampTrue.style.opacity = 0;
+                stampFalse.style.opacity = 0;
+                currentX = 0;
+            }
+        });
+    }
 
     const btnQuitBlitz = document.getElementById('btn-quit-blitz');
     if (btnQuitBlitz) btnQuitBlitz.addEventListener('click', handleQuitBlitz);
