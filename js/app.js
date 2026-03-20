@@ -604,12 +604,21 @@ async function init() {
     // Bottom Nav Listeners
     document.querySelectorAll('.nav-item').forEach(btn => {
         btn.addEventListener('click', () => {
-            switchTab(btn.dataset.target);
-            if (btn.dataset.target === 'screen-home') {
-                updateHomeScreen();
-                renderHubs();
-            } else if (btn.dataset.target === 'screen-profile') {
-                updateHomeScreen(); // also updates profile data
+            if (btn.id === 'nav-btn-blitz') {
+                hapticTap();
+                // Randomly trigger a Sprint until Stage 3 Blitz is built
+                handleStartSprint('Kinematics');
+                return;
+            }
+
+            if (btn.dataset.target) {
+                switchTab(btn.dataset.target);
+                if (btn.dataset.target === 'screen-home') {
+                    updateHomeScreen();
+                    renderHubs();
+                } else if (btn.dataset.target === 'screen-profile') {
+                    updateHomeScreen(); // also updates profile data
+                }
             }
         });
     });
