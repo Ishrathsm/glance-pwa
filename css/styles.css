@@ -933,28 +933,19 @@ body {
 }
 
 .splash-logo {
-  animation: float 2s ease-in-out infinite;
+  animation: fastBlink 0.4s ease-in-out infinite alternate;
 }
 
-@keyframes float {
+@keyframes fastBlink {
   0% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-10px);
+    opacity: 0.6;
+    transform: scale(0.95);
   }
 
   100% {
-    transform: translateY(0);
+    opacity: 1;
+    transform: scale(1.05);
   }
-}
-
-.splash-tagline {
-  font-size: 1.125rem;
-  font-weight: 800;
-  color: var(--ink);
-  letter-spacing: 0.05em;
 }
 
 /* --- Top Bar Badges --- */

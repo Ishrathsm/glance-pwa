@@ -532,7 +532,7 @@ async function init() {
 
     renderPath();
 
-    // Remove splash screen after 1.5s
+    // Remove splash screen after 0.8s
     setTimeout(() => {
         const splash = document.getElementById('screen-splash');
         if (splash) {
@@ -541,9 +541,9 @@ async function init() {
             setTimeout(() => {
                 splash.classList.remove('active');
                 splash.style.display = 'none'; // Force hide to prevent pointer-events blocking
-            }, 500);
+            }, 300); // Fades quickly 
         }
-    }, 1500);
+    }, 800);
 
     // --- Event Listeners ---
     document.getElementById('btn-check').addEventListener('click', handleCheck);
