@@ -18,7 +18,7 @@ import {
 import { getCurrentUser, signUpUser, signInUser, signOutUser, syncStateToCloud, fetchStateFromCloud, signInWithGoogle, onAuthChange } from './supabase.js';
 
 // --- Screen Management ---
-const screens = ['screen-splash', 'screen-home', 'screen-profile', 'screen-question', 'screen-blitz', 'screen-success', 'screen-sprint-complete', 'screen-revive'];
+const screens = ['screen-splash', 'screen-home', 'screen-games', 'screen-profile', 'screen-question', 'screen-blitz', 'screen-success', 'screen-sprint-complete', 'screen-revive'];
 
 function showScreen(screenId) {
     screens.forEach(id => {
@@ -185,8 +185,7 @@ function renderHubs() {
 
         node.addEventListener('click', () => {
             hapticTap();
-            // TODO: In Stage 4 this will pop the Bottom Sheet. For now, forces a sprint directly!
-            handleStartSprint(topic.id);
+            showModeSheet(topic.id);
         });
 
         const label = document.createElement('div');
@@ -201,19 +200,67 @@ function renderHubs() {
     physicsTopics.forEach(t => physicsHub.appendChild(createNode(t)));
     mathTopics.forEach(t => mathHub.appendChild(createNode(t)));
 }
-
 // --- Hub Tab Toggle Listeners ---
-document.querySelectorAll('.hub-tab').forEach(tab => {
-    tab.addEventListener('click', (e) => {
-        document.querySelectorAll('.hub-tab').forEach(t => t.classList.remove('active'));
-        e.target.classList.add('active');
+function initHubTabs() {
+    document.querySelectorAll('.hub-tab').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            document.querySelectorAll('.hub-tab').forEach(t => t.classList.remove('active'));
+            e.target.classList.add('active');
 
-        const targetHub = e.target.dataset.hub;
-        document.getElementById('hub-physics').classList.toggle('hidden', targetHub !== 'physics');
-        document.getElementById('hub-math').classList.toggle('hidden', targetHub !== 'math');
-        hapticTap();
+            const targetHub = e.target.dataset.hub;
+            document.getElementById('hub-physics').classList.toggle('hidden', targetHub !== 'physics');
+            document.getElementById('hub-math').classList.toggle('hidden', targetHub !== 'math');
+            hapticTap();
+        });
     });
-});
+}
+initHubTabs();
+// --- Mode Sheet Controller ---
+let selectedTopicForMode = null;
+
+function showModeSheet(topicId) {
+    selectedTopicForMode = topicId;
+    const sheet = document.getElementById('mode-sheet');
+    const topicLabel = document.getElementById('mode-sheet-topic');
+    if (topicLabel) topicLabel.textContent = topicId;
+    if (sheet) sheet.classList.remove('hidden');
+}
+
+function hideModeSheet() {
+    const sheet = document.getElementById('mode-sheet');
+    if (sheet) sheet.classList.add('hidden');
+    selectedTopicForMode = null;
+}
+
+// --- Mode Selection Listeners ---
+function initModeSheet() {
+    const btnSprint = document.getElementById('btn-choose-sprint');
+    const btnBlitz = document.getElementById('id-btn-choose-blitz');
+    const btnClose = document.getElementById('btn-close-sheet');
+    const overlay = document.getElementById('mode-sheet');
+
+    if (btnSprint) {
+        btnSprint.addEventListener('click', () => {
+            hapticTap();
+            hideModeSheet();
+            if (selectedTopicForMode) handleStartSprint(selectedTopicForMode);
+        });
+    }
+
+    if (btnBlitz) {
+        btnBlitz.addEventListener('click', () => {
+            hapticTap();
+            hideModeSheet();
+            handleStartBlitz(); // For now Blitz is random mock, but we could pass topic in future
+        });
+    }
+
+    if (btnClose) btnClose.addEventListener('click', hideModeSheet);
+    if (overlay) overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) hideModeSheet();
+    });
+}
+initModeSheet();
 
 // --- Render Question Step ---
 function renderQuestionStep() {
@@ -773,6 +820,12 @@ async function init() {
 
     const btnQuitBlitz = document.getElementById('btn-quit-blitz');
     if (btnQuitBlitz) btnQuitBlitz.addEventListener('click', handleQuitBlitz);
+
+    const btnArenaBlitz = document.getElementById('btn-arena-blitz');
+    if (btnArenaBlitz) btnArenaBlitz.addEventListener('click', () => {
+        hapticTap();
+        handleStartBlitz();
+    });
 
     // Bottom Nav Listeners
     document.querySelectorAll('.nav-item').forEach(btn => {
