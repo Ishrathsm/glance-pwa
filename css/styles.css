@@ -978,104 +978,120 @@ body {
   color: var(--ink);
 }
 
-/* --- Learning Path (Home) --- */
-.learning-path {
+/* --- Daily Goal Widget --- */
+.daily-blitz-widget {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  padding: 20px 0 60px 0;
-  gap: 40px;
+  background: linear-gradient(135deg, var(--bg-card), #f1f5f9);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin: 0 0 24px 0;
+  box-shadow: var(--shadow-card);
+}
+
+.blitz-info h3 {
+  font-weight: 900;
+  margin: 0 0 4px 0;
+  font-size: 1.125rem;
+}
+
+.blitz-info p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--ink-light);
+  line-height: 1.4;
+}
+
+.btn-blitz-start {
+  padding: 12px 16px;
+  font-size: 0.875rem;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+
+/* --- Hubs System --- */
+.hub-tabs {
+  display: flex;
+  margin-bottom: 24px;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--border);
+  overflow: hidden;
+}
+
+.hub-tab {
+  flex: 1;
+  padding: 16px 0;
+  border: none;
+  background: transparent;
+  font-family: var(--font);
+  font-weight: 800;
+  font-size: 0.875rem;
+  color: var(--ink-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.05em;
+}
+
+.hub-tab.active {
+  background: var(--ink);
+  color: white;
+}
+
+.hubs-container {
   position: relative;
+  width: 100%;
 }
 
-/* The connecting line behind nodes */
-.learning-path::before {
-  content: '';
-  position: absolute;
-  top: 20px;
-  bottom: 60px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 12px;
-  background: var(--border);
-  z-index: 0;
-  border-radius: 6px;
+.subject-hub {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  justify-items: center;
+  padding-bottom: 40px;
 }
 
+.subject-hub.hidden {
+  display: none !important;
+}
+
+/* Base Island Node Wrapper */
 .path-node-wrapper {
-  position: relative;
-  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
-}
-
-/* Snake pattern offset */
-.path-node-wrapper:nth-child(even) {
-  transform: translateX(30px);
-}
-
-.path-node-wrapper:nth-child(odd) {
-  transform: translateX(-30px);
+  width: 100%;
 }
 
 .path-node {
-  width: 72px;
-  height: 72px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
+  font-size: 2.25rem;
   cursor: pointer;
   border: 4px solid var(--border);
   background: var(--bg-card);
   box-shadow: var(--shadow-3d);
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   user-select: none;
+  position: relative;
 }
 
-.path-node.locked {
-  background: var(--border);
-  color: var(--ink-muted);
-  filter: grayscale(1);
-  box-shadow: none;
-  border-color: #d0d0d0;
-}
-
-.path-node.active {
-  background: var(--accent);
-  border-color: var(--accent-dark);
-  animation: nodePulse 2s infinite;
-}
-
-.path-node.active:active {
-  transform: translateY(4px);
+.path-node:active {
+  transform: translateY(4px) scale(0.95);
   box-shadow: var(--shadow-3d-pressed);
 }
 
-.path-node.completed {
+.path-node.mastered {
   background: var(--accent-dark);
   border-color: var(--accent-darker);
   color: white;
-}
-
-@keyframes nodePulse {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(190, 242, 100, 0.7);
-  }
-
-  70% {
-    transform: scale(1.05);
-    box-shadow: 0 0 0 15px rgba(190, 242, 100, 0);
-  }
-
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(190, 242, 100, 0);
-  }
 }
 
 .node-label {
@@ -1085,8 +1101,21 @@ body {
   color: var(--ink);
   background: var(--bg);
   padding: 4px 8px;
-  border-radius: 12px;
+  border-radius: 6px;
   border: 2px solid var(--border);
+}
+
+.node-mastery {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--ink);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 12px;
+  border: 2px solid var(--bg);
 }
 
 /* --- Bottom Navigation --- */

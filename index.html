@@ -59,8 +59,26 @@
         </div>
       </div>
 
-      <div class="learning-path" id="learning-path">
-        <!-- Path Nodes injected here via JS -->
+      <div class="daily-blitz-widget" id="daily-blitz-widget">
+        <div class="blitz-info">
+          <h3>Daily Blitz</h3>
+          <p>Finish a 2-min blitz to save your <span id="blitz-streak-value">0</span>-day streak!</p>
+        </div>
+        <button class="btn btn-primary btn-blitz-start" id="btn-daily-blitz">BLITZ ⚡</button>
+      </div>
+
+      <div class="hub-tabs">
+        <button class="hub-tab active" data-hub="physics">PHYSICS</button>
+        <button class="hub-tab" data-hub="math">MATH</button>
+      </div>
+
+      <div class="hubs-container">
+        <div class="subject-hub active" id="hub-physics">
+          <!-- Physics Nodes injected here -->
+        </div>
+        <div class="subject-hub hidden" id="hub-math">
+          <!-- Math Nodes injected here -->
+        </div>
       </div>
     </section>
 

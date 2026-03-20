@@ -135,47 +135,84 @@ async function updateHomeScreen() {
     if (profileErrors) profileErrors.textContent = `${errorsCount} mistakes logged`;
 }
 
-// --- Render Learning Path (Home) ---
-function renderPath() {
-    const pathContainer = document.getElementById('learning-path');
-    if (!pathContainer) return;
+// --- Render Subject Hubs (Home) ---
+function renderHubs() {
+    const physicsHub = document.getElementById('hub-physics');
+    const mathHub = document.getElementById('hub-math');
+    if (!physicsHub || !mathHub) return;
 
-    pathContainer.innerHTML = '';
+    physicsHub.innerHTML = '';
+    mathHub.innerHTML = '';
+
     const state = getState();
-    const completedNodes = Math.floor((state.questionsCompleted || []).length / 2);
+    const completedCount = state.questionsCompleted ? state.questionsCompleted.length : 0;
 
-    // Create 6 dummy nodes to show progression
-    const topics = ['Kinematics', 'Trig', 'Forces', 'Calculus', 'Energy', 'Algebra'];
-    const emojis = ['🚀', '📐', '🍎', '📈', '⚡', '✖️'];
+    // Very simple mockup mastery scale: Every completed question gives 2% everywhere for demo 
+    const mockMastery = Math.min(100, completedCount * 2);
 
-    topics.forEach((topic, i) => {
+    const physicsTopics = [
+        { id: 'Kinematics', icon: '🚀' },
+        { id: 'Forces', icon: '🍎' },
+        { id: 'Energy', icon: '⚡' },
+        { id: 'Optics', icon: '🔦' }
+    ];
+
+    const mathTopics = [
+        { id: 'Algebra', icon: '✖️' },
+        { id: 'Calculus', icon: '📈' },
+        { id: 'Trig', icon: '📐' },
+        { id: 'Geometry', icon: '🧊' }
+    ];
+
+    const createNode = (topic) => {
         const wrapper = document.createElement('div');
         wrapper.className = 'path-node-wrapper';
 
         const node = document.createElement('div');
         node.className = 'path-node';
-        node.textContent = emojis[i];
+        if (mockMastery >= 100) node.classList.add('mastered');
 
-        const label = document.createElement('span');
+        // Apply a realistic radial mastery ring
+        node.style.background = `conic-gradient(var(--accent-dark) 0%, var(--accent-dark) ${mockMastery}%, var(--bg-card) ${mockMastery}%, var(--bg-card) 100%)`;
+
+        node.innerHTML = `
+            <div style="background:var(--bg-card); width: 68px; height: 68px; border-radius: 50%; display: flex; align-items:center; justify-content:center;">
+                ${topic.icon}
+            </div>
+            <div class="node-mastery">${mockMastery}%</div>
+        `;
+
+        node.addEventListener('click', () => {
+            hapticTap();
+            // TODO: In Stage 4 this will pop the Bottom Sheet. For now, forces a sprint directly!
+            handleStartSprint(topic.id);
+        });
+
+        const label = document.createElement('div');
         label.className = 'node-label';
-        label.textContent = topic;
-
-        if (i < completedNodes) {
-            node.classList.add('completed');
-            // Clicking completed nodes acts like review
-            node.addEventListener('click', () => handleStartSprint(topic));
-        } else if (i === completedNodes) {
-            node.classList.add('active');
-            node.addEventListener('click', () => handleStartSprint(topic));
-        } else {
-            node.classList.add('locked');
-        }
+        label.textContent = topic.id;
 
         wrapper.appendChild(node);
         wrapper.appendChild(label);
-        pathContainer.appendChild(wrapper);
-    });
+        return wrapper;
+    };
+
+    physicsTopics.forEach(t => physicsHub.appendChild(createNode(t)));
+    mathTopics.forEach(t => mathHub.appendChild(createNode(t)));
 }
+
+// --- Hub Tab Toggle Listeners ---
+document.querySelectorAll('.hub-tab').forEach(tab => {
+    tab.addEventListener('click', (e) => {
+        document.querySelectorAll('.hub-tab').forEach(t => t.classList.remove('active'));
+        e.target.classList.add('active');
+
+        const targetHub = e.target.dataset.hub;
+        document.getElementById('hub-physics').classList.toggle('hidden', targetHub !== 'physics');
+        document.getElementById('hub-math').classList.toggle('hidden', targetHub !== 'math');
+        hapticTap();
+    });
+});
 
 // --- Render Question Step ---
 function renderQuestionStep() {
@@ -446,7 +483,7 @@ async function handleFinishSprint() {
 function handleBackHome() {
     switchTab('screen-home');
     updateHomeScreen();
-    renderPath();
+    renderHubs();
 }
 
 // --- Start Sprint ---
@@ -530,7 +567,7 @@ async function init() {
         showScreen('screen-home');
     }
 
-    renderPath();
+    renderHubs();
 
     // Remove splash screen after 0.8s
     setTimeout(() => {
@@ -570,7 +607,7 @@ async function init() {
             switchTab(btn.dataset.target);
             if (btn.dataset.target === 'screen-home') {
                 updateHomeScreen();
-                renderPath();
+                renderHubs();
             } else if (btn.dataset.target === 'screen-profile') {
                 updateHomeScreen(); // also updates profile data
             }
