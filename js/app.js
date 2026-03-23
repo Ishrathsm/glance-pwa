@@ -183,7 +183,7 @@ function renderHubs() {
 
         node.addEventListener('click', () => {
             hapticTap();
-            showModeSheet(topic.id);
+            handleStartSprint(topic.id);
         });
 
         const label = document.createElement('div');
@@ -586,9 +586,11 @@ async function handleFinishBlitz() {
 }
 
 function handleQuitBlitz() {
-    endBlitz();
-    showScreen('screen-home');
-    updateHomeScreen();
+    if (confirm("Are you sure you want to abandon this Blitz? Your streak will not be saved.")) {
+        endBlitz();
+        showScreen('screen-games');
+        updateHomeScreen();
+    }
 }
 
 // ============================================
@@ -639,6 +641,14 @@ function handleStartSprint(topic) {
 
     showScreen('screen-question');
     renderQuestionStep();
+}
+
+function handleQuitSprint() {
+    if (confirm("Are you sure you want to abandon this Sprint? Your progress will not be saved.")) {
+        endSprint();
+        showScreen('screen-home');
+        updateHomeScreen();
+    }
 }
 
 // --- Streak Revive ---
@@ -827,6 +837,9 @@ async function init() {
             }
         });
     }
+
+    const btnQuitSprint = document.getElementById('btn-quit-sprint');
+    if (btnQuitSprint) btnQuitSprint.addEventListener('click', handleQuitSprint);
 
     const btnQuitBlitz = document.getElementById('btn-quit-blitz');
     if (btnQuitBlitz) btnQuitBlitz.addEventListener('click', handleQuitBlitz);

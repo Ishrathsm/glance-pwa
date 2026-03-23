@@ -73,7 +73,11 @@
 
     <!-- ============ QUESTION SCREEN ============ -->
     <section id="screen-question" class="screen question-screen" aria-label="Question">
-      <div class="progress-bar" id="progress-bar">
+      <div class="top-bar" style="margin-bottom: 24px;">
+        <button class="btn-icon" id="btn-quit-sprint" aria-label="Quit Sprint" style="width: auto; padding: 0 8px; font-size: 1.2rem; display: flex; align-items: center; gap: 4px; border: 2px solid var(--border); border-radius: 8px;">
+          ⬅
+        </button>
+        <div class="progress-bar" id="progress-bar" style="flex: 1; margin: 0 16px; margin-bottom: 0;">
         <div class="progress-segment" id="seg-0">
           <div class="progress-fill"></div>
         </div>
@@ -82,6 +86,7 @@
         </div>
         <div class="progress-segment" id="seg-2">
           <div class="progress-fill"></div>
+        </div>
         </div>
       </div>
 
@@ -191,7 +196,9 @@
     <section id="screen-blitz" class="screen" aria-label="Blitz Training"
       style="overflow: hidden;">
       <div class="top-bar">
-        <button class="btn-icon" id="btn-quit-blitz" aria-label="Quit">✖</button>
+        <button class="btn-icon" id="btn-quit-blitz" aria-label="Quit" style="width: auto; padding: 0 8px; font-size: 1.2rem; display: flex; align-items: center; gap: 4px; border: 2px solid var(--border); border-radius: 8px;">
+          ⬅
+        </button>
         <div class="progress-bar" style="flex:1; margin: 0 16px;">
           <div class="progress-fill" id="blitz-progress-fill" style="width: 0%; background: var(--accent-dark);"></div>
         </div>
