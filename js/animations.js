@@ -79,12 +79,12 @@ export async function loadSounds() {
 /**
  * Play a sound effect
  */
-export function playSound(name) {
+export async function playSound(name) {
     if (!audioContext || !soundBuffers[name]) return;
 
     // Resume audio context if suspended (requires user gesture)
     if (audioContext.state === 'suspended') {
-        audioContext.resume();
+        await audioContext.resume();
     }
 
     const source = audioContext.createBufferSource();

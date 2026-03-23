@@ -267,7 +267,10 @@ function renderQuestionStep() {
     if (!sprint) return;
 
     currentQuestion = getCurrentQuestion();
-    if (!currentQuestion) return;
+    if (!currentQuestion) {
+        console.warn('renderQuestionStep: No question found in state.');
+        return;
+    }
 
     currentStepIndex = sprint.stepIndex;
     selectedOptionIndex = null;
@@ -444,10 +447,15 @@ function handleContinue() {
         return;
     }
 
+    // Ensure currentQuestion is synced before collapsing
+    if (!currentQuestion) currentQuestion = getCurrentQuestion();
+    
     // Collapse current step and show next
     const step = getStepData(currentQuestion, currentStepIndex);
-    document.getElementById(`collapsed-text-${currentStepIndex}`).textContent =
-        `${step.label}: ${step.summary}`;
+    if (step) {
+        document.getElementById(`collapsed-text-${currentStepIndex}`).textContent =
+            `${step.label}: ${step.summary}`;
+    }
 
     collapseStep(currentStepIndex);
 

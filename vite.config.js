@@ -13,9 +13,14 @@ export default defineConfig({
         description: 'Master JEE Physics & Math in 60 seconds a day',
         start_url: '/',
         display: 'standalone',
-        theme_color: '#BEF264',
-        background_color: '#F9F9F7',
+        theme_color: '#FFFF00',
+        background_color: '#FFFF00',
         icons: [
+          {
+            src: '/favicon.svg',
+            sizes: 'any',
+            type: 'image/svg+xml'
+          },
           {
             src: '/assets/icons/icon-192.png',
             sizes: '192x192',
