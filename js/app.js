@@ -416,12 +416,12 @@ function handleCheck() {
         feedbackEl.className = 'feedback-banner correct';
         feedbackEl.querySelector('.feedback-icon').textContent = '🎯';
         feedbackEl.querySelector('.feedback-text').textContent = 'Correct!';
-        playSound('ding');
+        playSound('success');
     } else {
         feedbackEl.className = 'feedback-banner incorrect';
         feedbackEl.querySelector('.feedback-icon').textContent = '💡';
         feedbackEl.querySelector('.feedback-text').textContent = `The answer is: ${step.options[step.ans]}`;
-        playSound('thud');
+        playSound('failure');
     }
 
     // Swap Check → Continue
@@ -461,7 +461,7 @@ function handleContinue() {
 // --- Success Screen ---
 function showSuccessScreen(isSprintDone) {
     hapticSuccess();
-    playSound('tada');
+    playSound('victory');
     showConfetti();
 
     showScreen('screen-success');
@@ -548,7 +548,7 @@ function handleBlitzAnswer(isTrueSelected) {
         playSound('success');
         hapticSuccess();
     } else {
-        playSound('wrong');
+        playSound('failure');
         // Vibrate differently for wrong? 
     }
 
@@ -665,7 +665,7 @@ async function handleRevive() {
         // No errors? Direct revive (maybe they just missed time but got everything right before)
         reviveStreak();
         hapticSuccess();
-        playSound('success');
+        playSound('victory');
         showConfetti();
         updateHomeScreen();
         showScreen('screen-home');

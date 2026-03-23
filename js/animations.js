@@ -50,9 +50,9 @@ export async function loadSounds() {
     if (!audioContext) return;
 
     const sounds = {
-        ding: '/assets/sounds/ding.mp3',
-        thud: '/assets/sounds/thud.mp3',
-        tada: '/assets/sounds/tada.mp3'
+        success: '/assets/sounds/success.wav',
+        failure: '/assets/sounds/failure.wav',
+        victory: '/assets/sounds/victory.wav'
     };
 
     // Try to load sounds, but don't block if they fail
