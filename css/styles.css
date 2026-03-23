@@ -906,8 +906,8 @@ body {
   height: 100%;
   z-index: 99999;
   /* Highest possible */
-  background-color: var(--bg);
-  /* App background */
+  background-color: #FFFF00;
+  /* Match full_logo bg */
   display: flex;
   align-items: center;
   justify-content: center;
