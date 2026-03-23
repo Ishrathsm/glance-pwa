@@ -91,6 +91,9 @@ export function getCurrentQuestion() {
  * Get the step data (step_1, step_2, step_3) for a question
  */
 export function getStepData(question, stepIndex) {
+    if (!question) {
+        console.error("DEBUG: getStepData called with null question! stepIndex: ", stepIndex);
+    }
     const stepKey = `step_${stepIndex + 1}`;
     return question[stepKey] || null;
 }

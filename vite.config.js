@@ -6,7 +6,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'inline',
-      includeAssets: ['favicon.svg', 'assets/fonts/*.woff2', 'assets/sounds/*.mp3'],
+      includeAssets: ['favicon.svg', 'assets/fonts/*.woff2', 'assets/sounds/*.wav'],
       manifest: {
         name: 'Glance - Get Smart in a Glance',
         short_name: 'Glance',
@@ -45,7 +45,7 @@ export default defineConfig({
             }
           },
           {
-            urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/,
+            urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|wav|mp3|ogg)$/,
             handler: 'CacheFirst',
             options: {
               cacheName: 'images-cache',
