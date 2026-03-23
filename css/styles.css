@@ -906,8 +906,8 @@ body {
   height: 100%;
   z-index: 99999;
   /* Highest possible */
-  background-color: var(--ink);
-  /* Elite dark intro */
+  background-color: var(--bg);
+  /* App background */
   display: flex;
   align-items: center;
   justify-content: center;
