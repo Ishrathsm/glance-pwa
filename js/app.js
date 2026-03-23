@@ -13,7 +13,7 @@ import {
 import { checkStreakMilestones } from './rewards.js';
 import {
     hapticTap, hapticSuccess, playSound, showConfetti,
-    initAudioOnInteraction
+    initAudioOnInteraction, collapseStep, showNextStep
 } from './animations.js';
 import { getCurrentUser, signUpUser, signInUser, signOutUser, syncStateToCloud, fetchStateFromCloud, signInWithGoogle, onAuthChange } from './supabase.js';
 
