@@ -28,14 +28,12 @@ function showScreen(screenId) {
         }
     });
 
-    // Handle bottom nav visibility
     const bottomNav = document.getElementById('bottom-nav');
     if (bottomNav) {
-        if (screenId === 'screen-home' || screenId === 'screen-profile') {
-            bottomNav.classList.remove('hidden');
-        } else {
-            bottomNav.classList.add('hidden');
-        }
+        // Show nav only on main hub/game/profile tabs
+        const isTabScreen = ['screen-home', 'screen-games', 'screen-profile'].includes(screenId);
+        bottomNav.style.display = isTabScreen ? 'flex' : 'none';
+        bottomNav.classList.toggle('hidden', !isTabScreen);
     }
 }
 
@@ -235,7 +233,7 @@ function hideModeSheet() {
 // --- Mode Selection Listeners ---
 function initModeSheet() {
     const btnSprint = document.getElementById('btn-choose-sprint');
-    const btnBlitz = document.getElementById('id-btn-choose-blitz');
+    const btnBlitz = document.getElementById('btn-choose-blitz');
     const btnClose = document.getElementById('btn-close-sheet');
     const overlay = document.getElementById('mode-sheet');
 
@@ -580,6 +578,9 @@ async function handleFinishBlitz() {
 
     endBlitz();
 
+    // Clearing a Blitz clears the immediate error bank (Pivot Rule)
+    setState({ errorBank: [] });
+
     const newState = getState();
     await syncStateToCloud(newState);
 }
@@ -641,16 +642,25 @@ function handleStartSprint(topic) {
 }
 
 // --- Streak Revive ---
-function handleRevive() {
-    const success = reviveStreak();
-    if (success) {
-        showScreen('screen-home');
-        updateHomeScreen();
+async function handleRevive() {
+    const state = getState();
+    const errors = state.errorBank || [];
+
+    if (errors.length > 0) {
+        hapticTap();
+        // Concept: Clearing errors restores the streak.
+        // We launch a Blitz. In a real app, this Blitz would filter for ONLY the error questions.
+        handleStartBlitz();
     } else {
-        // Not enough coins — could show a toast, for now just shake
-        const btn = document.getElementById('btn-revive');
-        btn.style.animation = 'shake 0.5s ease-in-out';
-        setTimeout(() => { btn.style.animation = ''; }, 500);
+        // No errors? Direct revive (maybe they just missed time but got everything right before)
+        reviveStreak();
+        hapticSuccess();
+        playSound('success');
+        showConfetti();
+        updateHomeScreen();
+        showScreen('screen-home');
+
+        await syncStateToCloud(getState());
     }
 }
 
@@ -830,21 +840,15 @@ async function init() {
     // Bottom Nav Listeners
     document.querySelectorAll('.nav-item').forEach(btn => {
         btn.addEventListener('click', () => {
-            if (btn.id === 'nav-btn-blitz') {
-                hapticTap();
-                handleStartBlitz();
-                return;
-            }
+            const target = btn.dataset.target;
+            if (!target) return;
 
-            if (btn.dataset.target) {
-                switchTab(btn.dataset.target);
-                if (btn.dataset.target === 'screen-home') {
-                    updateHomeScreen();
-                    renderHubs();
-                } else if (btn.dataset.target === 'screen-profile') {
-                    updateHomeScreen(); // also updates profile data
-                }
-            }
+            hapticTap();
+            switchTab(target);
+
+            // Refresh screen data
+            updateHomeScreen();
+            if (target === 'screen-home') renderHubs();
         });
     });
 
