@@ -381,7 +381,7 @@ function selectOption(index) {
 }
 
 // --- Check Answer ---
-function handleCheck() {
+async function handleCheck() {
     if (selectedOptionIndex === null || hasChecked) return;
 
     hasChecked = true;
@@ -419,12 +419,12 @@ function handleCheck() {
         feedbackEl.className = 'feedback-banner correct';
         feedbackEl.querySelector('.feedback-icon').textContent = '🎯';
         feedbackEl.querySelector('.feedback-text').textContent = 'Correct!';
-        playSound('success');
+        await playSound('success');
     } else {
         feedbackEl.className = 'feedback-banner incorrect';
         feedbackEl.querySelector('.feedback-icon').textContent = '💡';
         feedbackEl.querySelector('.feedback-text').textContent = `The answer is: ${step.options[step.ans]}`;
-        playSound('failure');
+        await playSound('failure');
     }
 
     // Swap Check → Continue
@@ -467,9 +467,9 @@ function handleContinue() {
 }
 
 // --- Success Screen ---
-function showSuccessScreen(isSprintDone) {
+async function showSuccessScreen(isSprintDone) {
     hapticSuccess();
-    playSound('victory');
+    await playSound('victory');
     showConfetti();
 
     showScreen('screen-success');
@@ -547,16 +547,17 @@ function renderBlitzQuestion() {
     }
 }
 
-function handleBlitzAnswer(isTrueSelected) {
+// --- Blitz Game Controllers ---
+async function handleBlitzAnswer(isTrueSelected) {
     hapticTap();
     const result = submitBlitzAnswer(isTrueSelected);
     if (!result) return;
 
     if (result.isCorrect) {
-        playSound('success');
+        await playSound('success');
         hapticSuccess();
     } else {
-        playSound('failure');
+        await playSound('failure');
         // Vibrate differently for wrong? 
     }
 
@@ -578,6 +579,8 @@ async function handleFinishBlitz() {
     recordStudySession();
 
     showScreen('screen-sprint-complete');
+    hapticSuccess();
+    await playSound('victory');
 
     document.getElementById('sprint-questions').textContent = `${summary.questionsAnswered} / 5`;
     document.getElementById('sprint-accuracy').textContent = `${summary.accuracy}%`;
@@ -619,6 +622,8 @@ async function handleFinishSprint() {
     const milestone = checkStreakMilestones(newStreak);
 
     showScreen('screen-sprint-complete');
+    hapticSuccess();
+    await playSound('victory');
 
     document.getElementById('sprint-questions').textContent =
         `${summary.questionsAnswered} / ${summary.totalQuestions}`;
@@ -673,11 +678,11 @@ async function handleRevive() {
         // No errors? Direct revive (maybe they just missed time but got everything right before)
         reviveStreak();
         hapticSuccess();
-        playSound('victory');
+        await playSound('victory');
         showConfetti();
         updateHomeScreen();
         showScreen('screen-home');
-
+        
         await syncStateToCloud(getState());
     }
 }
