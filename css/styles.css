@@ -794,17 +794,32 @@ body {
   }
 }
 
+.feedback-banner.active {
+  display: flex;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+}
+
 .feedback-banner.correct {
   display: flex;
   background: var(--correct-bg);
   color: var(--correct-text);
+  border: none;
 }
 
 .feedback-banner.incorrect {
   display: flex;
   background: var(--error-bg);
   color: var(--error-text);
+  border: none;
 }
+
+#btn-hint {
+  border-color: var(--accent-dark);
+  color: var(--ink);
+  font-weight: 800;
+}
+
 
 /* --- Utility --- */
 .gap-8 {

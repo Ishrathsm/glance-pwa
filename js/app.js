@@ -471,7 +471,22 @@ function renderQuestionStep() {
 
 // --- Option Selection ---
 function selectOption(index) {
-    if (hasChecked) return;
+    // If we are in "Try again" mode, allow selecting another option
+    const btnCheck = document.getElementById('btn-check');
+    if (hasChecked && btnCheck.textContent !== 'TRY AGAIN') return;
+
+    // If it was already marked incorrect, don't allow selecting it again right now? 
+    // Actually, let's just reset when they select a new one if it was wrong.
+    if (hasChecked && btnCheck.textContent === 'TRY AGAIN') {
+        // This is a retry select
+        hasChecked = false;
+        btnCheck.textContent = 'CHECK';
+        const optionsContainer = document.getElementById(`options-${currentStepIndex}`);
+        optionsContainer.querySelectorAll('.option-btn').forEach(btn => {
+            btn.classList.remove('incorrect');
+            btn.querySelector('.option-feedback').textContent = '';
+        });
+    }
 
     hapticTap();
     selectedOptionIndex = index;
@@ -491,57 +506,87 @@ function selectOption(index) {
 async function handleCheck() {
     if (selectedOptionIndex === null || hasChecked) return;
 
-    hasChecked = true;
     const isCorrect = checkAnswer(currentQuestion, currentStepIndex, selectedOptionIndex);
     const step = getStepData(currentQuestion, currentStepIndex);
-
-    // Record result
-    const result = recordStepResult(isCorrect);
-    stepXPEarned = result.xpEarned;
-    stepCoinsEarned = result.coinsEarned;
-    questionXP += result.xpEarned;
-    questionCoins += result.coinsEarned;
-
-    // Update XP
-    addRewards(stepXPEarned, stepCoinsEarned);
-
-    // Visual feedback on options
-    const optionsContainer = document.getElementById(`options-${currentStepIndex}`);
-    const buttons = optionsContainer.querySelectorAll('.option-btn');
-    buttons.forEach((btn, i) => {
-        if (i === step.ans) {
-            btn.classList.add('correct');
-            btn.querySelector('.option-feedback').textContent = '✅';
-        } else if (i === selectedOptionIndex && !isCorrect) {
-            btn.classList.add('incorrect');
-            btn.querySelector('.option-feedback').textContent = '❌';
-        } else {
-            btn.classList.add('disabled');
-        }
-    });
-
-    // Feedback banner
     const feedbackEl = document.getElementById(`feedback-${currentStepIndex}`);
+    const btnCheck = document.getElementById('btn-check');
+
     if (isCorrect) {
-        feedbackEl.className = 'feedback-banner correct';
+        hasChecked = true;
+        // Record result
+        const result = recordStepResult(true);
+        stepXPEarned = result.xpEarned;
+        stepCoinsEarned = result.coinsEarned;
+        questionXP += result.xpEarned;
+        questionCoins += result.coinsEarned;
+
+        // Update XP
+        addRewards(stepXPEarned, stepCoinsEarned);
+
+        // Visual feedback on options
+        const optionsContainer = document.getElementById(`options-${currentStepIndex}`);
+        const buttons = optionsContainer.querySelectorAll('.option-btn');
+        buttons.forEach((btn, i) => {
+            if (i === step.ans) {
+                btn.classList.add('correct');
+                btn.querySelector('.option-feedback').textContent = '✅';
+            } else {
+                btn.classList.add('disabled');
+            }
+        });
+
+        // Store result info for transition
+        document.getElementById('btn-continue').dataset.isQuestionDone = result.isQuestionDone;
+
+        // Feedback banner
+        feedbackEl.className = 'feedback-banner correct active';
         feedbackEl.querySelector('.feedback-icon').textContent = '🎯';
         feedbackEl.querySelector('.feedback-text').textContent = 'Correct!';
         await playSound('success');
+
+        // Swap Check → Continue
+        btnCheck.classList.add('hidden');
+        document.getElementById('btn-continue').classList.remove('hidden');
+        document.getElementById('btn-hint').classList.add('hidden');
+
     } else {
-        feedbackEl.className = 'feedback-banner incorrect';
+        // WRONG MOVE
+        hapticTap();
+        const optionsContainer = document.getElementById(`options-${currentStepIndex}`);
+        const selectedBtn = optionsContainer.querySelectorAll('.option-btn')[selectedOptionIndex];
+        selectedBtn.classList.add('incorrect');
+        selectedBtn.querySelector('.option-feedback').textContent = '❌';
+
+        feedbackEl.className = 'feedback-banner incorrect active';
         feedbackEl.querySelector('.feedback-icon').textContent = '💡';
-        feedbackEl.querySelector('.feedback-text').textContent = `The answer is: ${step.options[step.ans]}`;
+        feedbackEl.querySelector('.feedback-text').textContent = "Not quite. Try again!";
+
+        btnCheck.textContent = 'TRY AGAIN';
+        document.getElementById('btn-hint').classList.remove('hidden');
+
         await playSound('failure');
+        hasChecked = true; // Block until selection change or "Try Again" click
     }
-
-    // Swap Check → Continue
-    document.getElementById('btn-check').classList.add('hidden');
-    document.getElementById('btn-continue').classList.remove('hidden');
-
-    // Store result info for transition
-    document.getElementById('btn-continue').dataset.isQuestionDone = result.isQuestionDone;
-    document.getElementById('btn-continue').dataset.isSprintDone = result.isSprintDone;
 }
+
+function handleHint() {
+    hapticTap();
+    const feedbackEl = document.getElementById(`feedback-${currentStepIndex}`);
+    const step = getStepData(currentQuestion, currentStepIndex);
+
+    feedbackEl.className = 'feedback-banner active'; // Neutral color
+    feedbackEl.querySelector('.feedback-icon').textContent = '🤔';
+
+    // Simple heuristic for hints if not defined: use the "Concept" or part of summary
+    let hint = step.hint || `Think about the ${step.label}...`;
+
+    feedbackEl.querySelector('.feedback-text').textContent = `Hint: ${hint}`;
+
+    // Hide hint button after use
+    document.getElementById('btn-hint').classList.add('hidden');
+}
+
+
 
 // --- Continue to Next Step ---
 function handleContinue() {
@@ -888,6 +933,9 @@ async function init() {
             hapticTap();
         });
     });
+
+    document.getElementById('btn-hint').addEventListener('click', handleHint);
+
     document.getElementById('btn-continue').addEventListener('click', handleContinue);
 
     const btnNext = document.getElementById('btn-next-question');
