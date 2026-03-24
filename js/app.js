@@ -18,7 +18,7 @@ import {
 import { getCurrentUser, signUpUser, signInUser, signOutUser, syncStateToCloud, fetchStateFromCloud, signInWithGoogle, onAuthChange } from './supabase.js';
 
 // --- Screen Management ---
-const screens = ['screen-splash', 'screen-home', 'screen-games', 'screen-profile', 'screen-question', 'screen-blitz', 'screen-success', 'screen-sprint-complete', 'screen-revive'];
+const screens = ['screen-splash', 'screen-onboarding', 'screen-home', 'screen-games', 'screen-profile', 'screen-question', 'screen-blitz', 'screen-success', 'screen-sprint-complete', 'screen-revive'];
 
 function showScreen(screenId) {
     screens.forEach(id => {
@@ -45,7 +45,112 @@ function switchTab(targetId) {
     });
 }
 
-// --- Sprint State ---
+// --- Onboarding Handle ---
+function initGradePicker() {
+    const scrollEl = document.getElementById('grade-scroll');
+    if (!scrollEl) return;
+
+    const items = scrollEl.querySelectorAll('.grade-picker-item:not(.placeholder)');
+    const itemHeight = 50;
+    let lastIdx = -1;
+
+    scrollEl.addEventListener('scroll', () => {
+        const scrollTop = scrollEl.scrollTop;
+        const index = Math.round(scrollTop / itemHeight);
+
+        // Ensure index is within bounds of real items
+        // Since there are 2 placeholders at start, the 1st real item is at index 2 (scroll 100px)
+        const activeIdx = index; // The center item in the window
+        const realItems = scrollEl.querySelectorAll('.grade-picker-item');
+
+        realItems.forEach((item, i) => {
+            if (i === activeIdx) {
+                item.classList.add('active');
+                if (activeIdx !== lastIdx && !item.classList.contains('placeholder')) {
+                    hapticTap();
+                    onboardingData.grade = item.dataset.value;
+                    lastIdx = activeIdx;
+                }
+            } else {
+                item.classList.remove('active');
+            }
+        });
+    });
+
+    // Set initial active state (centered on Grade 11/12)
+    scrollEl.scrollTop = 100;
+}
+
+function finishOnboarding() {
+    onboardingData.name = document.getElementById('onboarding-name').value || 'Learner';
+
+    setState({
+        hasOnboarded: true,
+        userName: onboardingData.name,
+        userGrade: onboardingData.grade,
+        userExam: onboardingData.exam
+    });
+
+    hapticSuccess();
+    playSound('victory');
+    showScreen('screen-home');
+    updateHomeScreen();
+
+    // Show tutorial prompt
+    showTutorialPrompt("Tap a topic to start your first Sprint! 🔥");
+}
+
+function showTutorialPrompt(message) {
+    const toast = document.createElement('div');
+    toast.className = 'tutorial-toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.classList.add('active');
+    }, 100);
+
+    setTimeout(() => {
+        toast.classList.remove('active');
+        setTimeout(() => toast.remove(), 500);
+    }, 4000);
+}
+
+
+function handleOnboardingNext() {
+    hapticTap();
+    const slides = document.querySelectorAll('.onboarding-slide');
+    const totalSlides = slides.length;
+
+    // Last slide? Finish onboarding
+    if (onboardingStep >= totalSlides - 1) {
+        finishOnboarding();
+        return;
+    }
+
+    // Validation
+    if (onboardingStep === 0 && !onboardingData.grade) return hapticTap();
+    if (onboardingStep === 1 && !onboardingData.exam) return hapticTap();
+    if (onboardingStep === 2) {
+        const nameInput = document.getElementById('onboarding-name');
+        if (!nameInput.value.trim()) return hapticTap();
+    }
+
+    // Active slide check
+    slides[onboardingStep].classList.remove('active');
+    onboardingStep++;
+    slides[onboardingStep].classList.add('active');
+
+    // Update progress bar
+    const progress = ((onboardingStep + 1) / totalSlides) * 100;
+    document.getElementById('onboarding-bar').style.width = `${progress}%`;
+
+    // Update button text on last slide
+    if (onboardingStep === totalSlides - 1) {
+        document.getElementById('btn-onboarding-next').textContent = "LET'S GO!";
+    }
+}
+
 let currentQuestions = [];
 let currentQuestion = null;
 let currentStepIndex = 0;
@@ -55,6 +160,8 @@ let stepXPEarned = 0;
 let stepCoinsEarned = 0;
 let questionXP = 0;
 let questionCoins = 0;
+let onboardingStep = 0;
+let onboardingData = { grade: '', exam: '', name: '' };
 
 // --- Update Home Screen UI ---
 async function updateHomeScreen() {
@@ -449,7 +556,7 @@ function handleContinue() {
 
     // Ensure currentQuestion is synced before collapsing
     if (!currentQuestion) currentQuestion = getCurrentQuestion();
-    
+
     // Collapse current step and show next
     const step = getStepData(currentQuestion, currentStepIndex);
     if (step) {
@@ -682,7 +789,7 @@ async function handleRevive() {
         showConfetti();
         updateHomeScreen();
         showScreen('screen-home');
-        
+
         await syncStateToCloud(getState());
     }
 }
@@ -727,12 +834,13 @@ async function init() {
     // Update home screen
     updateHomeScreen();
 
-    // Show appropriate screen behind splash
-    if (streakStatus.status === 'broken' && streakStatus.streak > 0) {
+    const state = getState();
+    if (!state.hasOnboarded) {
+        showScreen('screen-onboarding');
+    } else if (streakStatus.status === 'broken' && streakStatus.streak > 0) {
         // Show revive screen
         document.getElementById('revive-streak').textContent = `🔥 ${streakStatus.streak}`;
         document.getElementById('revive-days').textContent = streakStatus.streak;
-        const state = getState();
         const canAfford = state.coins >= 50;
         document.getElementById('btn-revive').disabled = !canAfford;
         if (!canAfford) {
@@ -756,10 +864,30 @@ async function init() {
                 splash.style.display = 'none'; // Force hide to prevent pointer-events blocking
             }, 300); // Fades quickly 
         }
+
+        // Initialize Grade Picker
+        initGradePicker();
     }, 800);
 
     // --- Event Listeners ---
     document.getElementById('btn-check').addEventListener('click', handleCheck);
+    document.getElementById('btn-back-home').addEventListener('click', handleBackHome);
+
+    // Onboarding listeners
+    document.getElementById('btn-onboarding-next').addEventListener('click', handleOnboardingNext);
+    document.querySelectorAll('.onboarding-option').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const type = btn.dataset.type;
+            const value = btn.dataset.value;
+            onboardingData[type] = value;
+
+            const siblings = btn.parentElement.querySelectorAll('.onboarding-option');
+            siblings.forEach(s => s.classList.remove('selected'));
+            btn.classList.add('selected');
+
+            hapticTap();
+        });
+    });
     document.getElementById('btn-continue').addEventListener('click', handleContinue);
 
     const btnNext = document.getElementById('btn-next-question');

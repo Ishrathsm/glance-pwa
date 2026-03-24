@@ -34,7 +34,83 @@
     <!-- ============ SPLASH SCREEN ============ -->
     <section id="screen-splash" class="screen splash-screen active" aria-label="Splash">
       <div class="splash-content">
-        <img src="/full_logo.svg" alt="Glance Logo" class="splash-logo" style="width: 80%; max-width: 300px; height: auto;" />
+        <img src="/full_logo.svg" alt="Glance Logo" class="splash-logo"
+          style="width: 80%; max-width: 300px; height: auto;" />
+      </div>
+    </section>
+
+    <!-- ============ ONBOARDING SCREEN ============ -->
+    <section id="screen-onboarding" class="screen" aria-label="Onboarding" style="padding: 0; background: var(--bg);">
+      <div class="onboarding-progress">
+        <div class="onboarding-bar" id="onboarding-bar" style="width: 25%;"></div>
+      </div>
+
+      <div id="onboarding-slides"
+        style="flex: 1; display: flex; flex-direction: column; position: relative; overflow: hidden;">
+
+        <!-- Slide 1: Grade Selection -->
+        <div class="onboarding-slide active" data-step="0">
+          <div class="onboarding-visual" style="flex: 0.6;">
+            <span style="font-size: 4rem;">🎓</span>
+          </div>
+          <h1 class="text-xxl" style="text-align: center; margin-bottom: 24px;">What grade are you in?</h1>
+
+          <div class="grade-picker-container">
+            <div class="grade-picker-window"></div>
+            <div class="grade-picker-scroll" id="grade-scroll">
+              <div class="grade-picker-item placeholder"></div>
+              <div class="grade-picker-item placeholder"></div>
+              <div class="grade-picker-item" data-value="9">Grade 9</div>
+              <div class="grade-picker-item" data-value="10">Grade 10</div>
+              <div class="grade-picker-item" data-value="11">Grade 11</div>
+              <div class="grade-picker-item" data-value="12">Grade 12</div>
+              <div class="grade-picker-item" data-value="dropper">Dropper / Repeater</div>
+              <div class="grade-picker-item placeholder"></div>
+              <div class="grade-picker-item placeholder"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Slide 2: Exam Goal -->
+        <div class="onboarding-slide" data-step="1">
+          <div class="onboarding-visual">
+            <span style="font-size: 5rem;">🎯</span>
+          </div>
+          <h1 class="text-xxl" style="text-align: center; margin-bottom: 12px;">Which exam?</h1>
+          <div style="display: grid; gap: 12px; width: 100%; padding: 0 40px; margin-top: 24px;">
+            <button class="btn btn-secondary onboarding-option" data-type="exam" data-value="JEE">JEE Main &
+              Advanced</button>
+            <button class="btn btn-secondary onboarding-option" data-type="exam" data-value="NEET">NEET Physics</button>
+            <button class="btn btn-secondary onboarding-option" data-type="exam" data-value="Boards">Class 12
+              Boards</button>
+          </div>
+        </div>
+
+        <!-- Slide 3: Name Input -->
+        <div class="onboarding-slide" data-step="2">
+          <div class="onboarding-visual">
+            <span style="font-size: 5rem;">👋</span>
+          </div>
+          <h1 class="text-xxl" style="text-align: center; margin-bottom: 12px;">What should we call you?</h1>
+          <div style="width: 100%; padding: 0 40px; margin-top: 24px;">
+            <input type="text" id="onboarding-name" placeholder="Your name" class="auth-input"
+              style="text-align: center; font-size: 1.25rem;">
+          </div>
+        </div>
+
+        <!-- Slide 4: Ready -->
+        <div class="onboarding-slide" data-step="3">
+          <div class="onboarding-visual">
+            <img src="/full_logo.svg" alt="Glance Logo" style="width: 200px; margin-bottom: 24px;">
+          </div>
+          <h1 class="text-xxl" style="text-align: center; margin-bottom: 12px;">You're All Set!</h1>
+          <p class="text-muted" style="text-align: center; padding: 0 40px;">Ready to get 1% smarter everyday?</p>
+        </div>
+
+      </div>
+
+      <div class="onboarding-footer" style="padding: 20px;">
+        <button class="btn btn-primary" id="btn-onboarding-next">CONTINUE</button>
       </div>
     </section>
 
@@ -67,19 +143,20 @@
     <!-- ============ QUESTION SCREEN ============ -->
     <section id="screen-question" class="screen question-screen" aria-label="Question">
       <div class="top-bar" style="margin-bottom: 24px;">
-        <button class="btn-icon" id="btn-quit-sprint" aria-label="Quit Sprint" style="width: auto; padding: 0 8px; font-size: 1.2rem; display: flex; align-items: center; gap: 4px; border: 2px solid var(--border); border-radius: 8px;">
+        <button class="btn-icon" id="btn-quit-sprint" aria-label="Quit Sprint"
+          style="width: auto; padding: 0 8px; font-size: 1.2rem; display: flex; align-items: center; gap: 4px; border: 2px solid var(--border); border-radius: 8px;">
           ⬅
         </button>
         <div class="progress-bar" id="progress-bar" style="flex: 1; margin: 0 16px; margin-bottom: 0;">
-        <div class="progress-segment" id="seg-0">
-          <div class="progress-fill"></div>
-        </div>
-        <div class="progress-segment" id="seg-1">
-          <div class="progress-fill"></div>
-        </div>
-        <div class="progress-segment" id="seg-2">
-          <div class="progress-fill"></div>
-        </div>
+          <div class="progress-segment" id="seg-0">
+            <div class="progress-fill"></div>
+          </div>
+          <div class="progress-segment" id="seg-1">
+            <div class="progress-fill"></div>
+          </div>
+          <div class="progress-segment" id="seg-2">
+            <div class="progress-fill"></div>
+          </div>
         </div>
       </div>
 
@@ -186,10 +263,10 @@
     </section>
 
     <!-- ============ BLITZ SCREEN (Rapid Fire) ============ -->
-    <section id="screen-blitz" class="screen" aria-label="Blitz Training"
-      style="overflow: hidden;">
+    <section id="screen-blitz" class="screen" aria-label="Blitz Training" style="overflow: hidden;">
       <div class="top-bar">
-        <button class="btn-icon" id="btn-quit-blitz" aria-label="Quit" style="width: auto; padding: 0 8px; font-size: 1.2rem; display: flex; align-items: center; gap: 4px; border: 2px solid var(--border); border-radius: 8px;">
+        <button class="btn-icon" id="btn-quit-blitz" aria-label="Quit"
+          style="width: auto; padding: 0 8px; font-size: 1.2rem; display: flex; align-items: center; gap: 4px; border: 2px solid var(--border); border-radius: 8px;">
           ⬅
         </button>
         <div class="progress-bar" style="flex:1; margin: 0 16px;">

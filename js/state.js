@@ -12,7 +12,11 @@ const DEFAULT_STATE = {
     questionsCompleted: [],
     errorBank: [],
     currentSprint: null,
-    sprintHistory: []
+    sprintHistory: [],
+    hasOnboarded: false,
+    userName: '',
+    userGrade: '',
+    userExam: ''
 };
 
 // Event listeners for state changes

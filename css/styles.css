@@ -1560,3 +1560,140 @@ input:checked+.slider:before {
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
+
+/* --- Onboarding --- */
+.onboarding-progress {
+  width: 100%;
+  height: 8px;
+  background: var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.onboarding-bar {
+  height: 100%;
+  background: var(--accent-darker);
+  transition: width var(--transition-normal);
+}
+
+.onboarding-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(20px);
+  transition: all var(--transition-normal);
+}
+
+.onboarding-slide.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+
+.onboarding-visual {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 40px;
+}
+
+.onboarding-option.selected {
+  border-color: var(--accent-darker);
+  background: var(--accent);
+  box-shadow: var(--shadow-3d);
+  transform: translateY(-2px);
+}
+
+.tutorial-toast {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--ink);
+  color: #FFF;
+  padding: 12px 20px;
+  border-radius: 99px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 2000;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.tutorial-toast.active {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* --- Grade Picker --- */
+.grade-picker-container {
+  width: 100%;
+  height: 250px;
+  position: relative;
+  overflow: hidden;
+  margin-top: 24px;
+}
+
+.grade-picker-window {
+  position: absolute;
+  top: 100px;
+  left: 20px;
+  right: 20px;
+  height: 50px;
+  background: var(--bg-card);
+  border: 2px solid var(--accent-dark);
+  border-radius: 12px;
+  box-shadow: var(--shadow-3d);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.grade-picker-scroll {
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0px;
+  mask-image: linear-gradient(to bottom, transparent 0%, black 40%, black 60%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 40%, black 60%, transparent 100%);
+}
+
+.grade-picker-item {
+  height: 50px;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--ink-muted);
+  scroll-snap-align: center;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.grade-picker-item.active {
+  color: var(--ink);
+  transform: scale(1.1);
+}
+
+.grade-picker-item.placeholder {
+  pointer-events: none;
+}
